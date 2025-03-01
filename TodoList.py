@@ -9,6 +9,7 @@ page = st.sidebar.selectbox('Go to', ('To Do List', 'Handwriting OCR'))
 
 if page == 'To Do List':
     st.title('To Do list:')
+    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable tasks that prevent you getting overwhelmed from your tasks. ')
 
     if 'key' not in st.session_state:
         st.session_state.key = []
