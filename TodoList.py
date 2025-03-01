@@ -4,12 +4,12 @@ import shortuuid
 
 column1, column2, column3 = st.columns(3)
 
-st.sidebar.title('Choose a tool:')
-page = st.sidebar.selectbox('Go to', ('To Do List', 'AI Text Extraction'))
+st.sidebar.title('Navigation')
+page = st.sidebar.selectbox('Go to', ('To Do List', 'Handwriting OCR'))
 
 if page == 'To Do List':
     st.title('To Do list:')
-    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks.) ')
+    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable tasks that prevent you getting overwhelmed from your tasks. ')
 
     if 'key' not in st.session_state:
         st.session_state.key = []
@@ -17,7 +17,7 @@ if page == 'To Do List':
     column1, column2, column3 = st.columns(3)
 
     with column2:
-        todoinput = st.text_input('Firstly,enter a task:')
+        todoinput = st.text_input('To Do:')
         date = st.date_input('Enter the deadline')
 
     with column3:
@@ -60,17 +60,16 @@ if page == 'To Do List':
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
             'Break down the following task: ' + st.session_state.tasks[task] +
-            ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.')
+            ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.Give the format as such that there is a new line after every stage')
 
         stages = response.text.split('Stage')
 
-        container = st.container(height=100)
-        for stage in stages:
-            container.write(stage)
 
-elif page == 'AI Text Extraction':
-    st.title('Image to text:')
-    st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).')
+
+        st.text_area('AI Task Breakdown',response.text)
+
+elif page == 'Handwriting OCR':
+    st.title('Handwriting Text Extraction:')
     import streamlit as st
     from PIL import Image
     import google.generativeai as genai
@@ -85,6 +84,15 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+    else:
+        st.write("Take a picture to extract the text")
+
+
+
+
+
+
+
 
 
 
