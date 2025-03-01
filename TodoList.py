@@ -68,7 +68,7 @@ if page == 'To Do List':
         for stage in stages:
             container.write(stage)
 
-elif page == 'Handwriting OCR':
+elif page == 'AI Text Extraction':
     st.title('Handwriting Text Extraction:')
     st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).')
     import streamlit as st
