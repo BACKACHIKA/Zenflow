@@ -70,7 +70,7 @@ if page == 'To Do List':
 
 elif page == 'Handwriting OCR':
     st.title('Handwriting Text Extraction:')
-    st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).The other tool is a a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks')
+    st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).')
     import streamlit as st
     from PIL import Image
     import google.generativeai as genai
