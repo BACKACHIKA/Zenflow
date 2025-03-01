@@ -69,7 +69,7 @@ if page == 'To Do List':
             container.write(stage)
 
 elif page == 'AI Text Extraction':
-    st.title('Handwriting Text Extraction:')
+    st.title('Image to text:')
     st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).')
     import streamlit as st
     from PIL import Image
@@ -85,8 +85,6 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
-    else:
-        st.write("Take a picture to extract the text")
 
 
 
