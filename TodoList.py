@@ -5,11 +5,11 @@ import shortuuid
 column1, column2, column3 = st.columns(3)
 
 st.sidebar.title('Navigation')
-page = st.sidebar.selectbox('Go to', ('To Do List', 'Handwriting OCR'))
+page = st.sidebar.selectbox('Go to', ('To Do List', 'AI Text Extraction'))
 
 if page == 'To Do List':
     st.title('To Do list:')
-    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable tasks that prevent you getting overwhelmed from your tasks. ')
+    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks.The other tool is a AI-powered tool that can extract the text from images(including handwritten text) ')
 
     if 'key' not in st.session_state:
         st.session_state.key = []
@@ -70,6 +70,7 @@ if page == 'To Do List':
 
 elif page == 'Handwriting OCR':
     st.title('Handwriting Text Extraction:')
+    st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).The other tool is a a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks')
     import streamlit as st
     from PIL import Image
     import google.generativeai as genai
