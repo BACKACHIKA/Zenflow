@@ -4,12 +4,12 @@ import shortuuid
 
 column1, column2, column3 = st.columns(3)
 
-st.sidebar.title('Navigation')
+st.sidebar.title('Choose a tool:')
 page = st.sidebar.selectbox('Go to', ('To Do List', 'AI Text Extraction'))
 
 if page == 'To Do List':
     st.title('To Do list:')
-    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks.The other tool is a AI-powered tool that can extract the text from images(including handwritten text) ')
+    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks.) ')
 
     if 'key' not in st.session_state:
         st.session_state.key = []
