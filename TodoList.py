@@ -17,7 +17,7 @@ if page == 'To Do List':
     column1, column2, column3 = st.columns(3)
 
     with column2:
-        todoinput = st.text_input('To Do:')
+        todoinput = st.text_input('Firstly,enter a task:')
         date = st.date_input('Enter the deadline')
 
     with column3:
