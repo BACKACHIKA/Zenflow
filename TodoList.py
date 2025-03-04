@@ -35,7 +35,7 @@ if page == 'To Do List':
         st.session_state.tasks.append(todoinput)
         st.session_state.dates.append(date)
         todoinput = ""
-        st.rerun()
+        
 
     def remove_task(task, date):
         st.session_state.tasks.remove(task)
