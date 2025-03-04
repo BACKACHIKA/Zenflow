@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import google.generativeai as genai
 import shortuuid
@@ -36,42 +34,42 @@ if page == 'To Do List':
             st.session_state.tasks.append(todoinput)
             st.session_state.dates.append(date)
 
-            # Generate AI breakdown only if not already stored
-            if todoinput not in st.session_state.ai_breakdowns:
-                response = model.generate_content(
-                    f'Break down the following task: {todoinput} into chunks that can be completed in pomodoro sessions. '
-                    'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-                    'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-                    'If no task is given, say Please enter a task above.'
-                )
-                st.session_state.ai_breakdowns[todoinput] = response.text
+            # Ensure AI breakdown is generated before rerun
+            response = model.generate_content(
+                f'Break down the following task: {todoinput} into chunks that can be completed in pomodoro sessions. '
+                'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+                'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+                'If no task is given, say Please enter a task above.'
+            )
+            st.session_state.ai_breakdowns[todoinput] = response.text
             
             st.rerun()
 
-    def remove_task(index):
-        task = st.session_state.tasks[index]
+    def remove_task(task_name):
+        if task_name in st.session_state.tasks:
+            index = st.session_state.tasks.index(task_name)
 
-        # Ensure the task exists before attempting to delete
-        if task in st.session_state.ai_breakdowns:
-            del st.session_state.ai_breakdowns[task]
+            if task_name in st.session_state.ai_breakdowns:
+                del st.session_state.ai_breakdowns[task_name]
 
-        del st.session_state.tasks[index]
-        del st.session_state.dates[index]
+            del st.session_state.tasks[index]
+            del st.session_state.dates[index]
 
-        st.rerun()
+            st.rerun()
 
-    for index, (task, due_date) in enumerate(zip(st.session_state.tasks, st.session_state.dates)):
+    for task in st.session_state.tasks:
         col1, col2, col3 = st.columns([2, 1, 1])
 
         with col2:
-            if st.button('Remove', key=str(shortuuid.uuid())):  # Using shortuuid here
-                remove_task(index)
+            if st.button('Remove', key=str(shortuuid.uuid())):
+                remove_task(task)
 
         with col1:
             st.write(task)
 
         with col3:
-            st.write(due_date)
+            index = st.session_state.tasks.index(task)
+            st.write(st.session_state.dates[index])
 
         # Display AI Breakdown for each task
         if task in st.session_state.ai_breakdowns:
