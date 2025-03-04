@@ -12,7 +12,8 @@ page = st.sidebar.selectbox('Go to', ('To Do List', 'AI Text Extraction'))
 
 if page == 'To Do List':
     st.title('To Do List')
-    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
+    st.sidebar.write(
+        'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
 
     if 'tasks' not in st.session_state:
         st.session_state.tasks = []
@@ -23,7 +24,7 @@ if page == 'To Do List':
 
     with col1:
         todoinput = st.text_input('Enter a task:')
-    
+
     with col2:
         date = st.date_input('Enter the deadline')
 
@@ -33,16 +34,18 @@ if page == 'To Do List':
             st.session_state.dates.append(date)
             st.rerun()
 
-    def remove_task(task_name):
-        if task_name in st.session_state.tasks:
-            index = st.session_state.tasks.index(task_name)
-            del st.session_state.tasks[index]
-            del st.session_state.dates[index]
-            st.rerun()  # Ensures the UI updates immediately
 
-    tasks_copy = st.session_state.tasks[:]  # Copy to avoid iteration errors
-    for task in tasks_copy:
-        task_uuid = shortuuid.uuid()  # Keep unique key for remove button
+    def remove_task(task_name):
+        if task_name in range(len(st.session_state.tasks)):
+
+            st.session_state.tasks.remove(task_name)
+            st.session_state.dates.remove(task_name)
+            st.rerun()  
+
+
+    
+    for task in st.session_state.tasks:
+        task_uuid = shortuuid.uuid()  
 
         col1, col2, col3 = st.columns([2, 1, 1])
 
@@ -58,7 +61,7 @@ if page == 'To Do List':
             if index != -1:
                 st.write(st.session_state.dates[index])
 
-        # Generate AI Breakdown on the spot (not stored)
+
         response = model.generate_content(
             f'Break down the following task: {task} into chunks that can be completed in pomodoro sessions. '
             'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
