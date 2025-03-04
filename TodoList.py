@@ -40,26 +40,23 @@ if page == 'To Do List':
 
             st.session_state.tasks.remove(task_name)
             st.session_state.dates.remove(task_name)
-            st.rerun()  
+            st.rerun()
 
 
-    
-    for task in st.session_state.tasks:
-        task_uuid = shortuuid.uuid()  
+
+    for task in range(len(st.session_state.tasks)):
+
 
         col1, col2, col3 = st.columns([2, 1, 1])
 
         with col2:
-            if st.button('Remove', key=f"remove_{task_uuid}"):
-                remove_task(task)
+            if st.button('Remove', key=shortuuid.uuid()):
+                remove_task(st.session_state.tasks[task])
 
         with col1:
-            st.write(task)
+            st.write(st.session_state.tasks[task])
 
-        with col3:
-            index = st.session_state.tasks.index(task) if task in st.session_state.tasks else -1
-            if index != -1:
-                st.write(st.session_state.dates[index])
+
 
 
         response = model.generate_content(
@@ -81,3 +78,5 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
+
