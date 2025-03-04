@@ -34,7 +34,7 @@ if page == 'To Do List':
             st.session_state.tasks.append(todoinput)
             st.session_state.dates.append(date)
 
-            # Generate AI breakdown before rerunning
+            # Generate AI breakdown and store it
             response = model.generate_content(
                 f'Break down the following task: {todoinput} into chunks that can be completed in pomodoro sessions. '
                 'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
@@ -42,20 +42,23 @@ if page == 'To Do List':
                 'If no task is given, say Please enter a task above.'
             )
             st.session_state.ai_breakdowns[todoinput] = response.text
-            
+
             st.rerun()
 
     def remove_task(task_name):
         if task_name in st.session_state.tasks:
-            # Filter out the removed task while keeping everything else
-            st.session_state.tasks = [task for task in st.session_state.tasks if task != task_name]
-            st.session_state.dates = [date for i, date in enumerate(st.session_state.dates) if st.session_state.tasks[i] != task_name]
+            index = st.session_state.tasks.index(task_name)
+
+            # Rebuild lists, ensuring correct filtering
+            st.session_state.tasks = [task for i, task in enumerate(st.session_state.tasks) if i != index]
+            st.session_state.dates = [date for i, date in enumerate(st.session_state.dates) if i != index]
             st.session_state.ai_breakdowns = {task: breakdown for task, breakdown in st.session_state.ai_breakdowns.items() if task != task_name}
 
             st.rerun()
 
-    # Iterate over tasks without using enumerate()
-    for task in list(st.session_state.tasks):  # Using list() to avoid iteration issues during removal
+    # Iterate over tasks and display everything
+    for i in range(len(st.session_state.tasks)):
+        task = st.session_state.tasks[i]
         task_uuid = shortuuid.uuid()  # Generate a unique ID for the remove button
         
         col1, col2, col3 = st.columns([2, 1, 1])
@@ -68,8 +71,7 @@ if page == 'To Do List':
             st.write(task)
 
         with col3:
-            index = st.session_state.tasks.index(task)
-            st.write(st.session_state.dates[index])
+            st.write(st.session_state.dates[i])
 
         # Display AI Breakdown for each task
         if task in st.session_state.ai_breakdowns:
