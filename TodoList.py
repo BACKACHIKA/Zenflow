@@ -1,8 +1,10 @@
+
 import streamlit as st
 import google.generativeai as genai
 import shortuuid
 from PIL import Image
 
+# Configure AI Model once
 genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -17,33 +19,41 @@ if page == 'To Do List':
         st.session_state.tasks = []
     if 'dates' not in st.session_state:
         st.session_state.dates = []
+    if 'task_added' not in st.session_state:  
+        st.session_state.task_added = False  
 
-    column1, column2, column3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
-    with column2:
+    with col1:
         todoinput = st.text_input('Enter a task:')
+    
+    with col2:
         date = st.date_input('Enter the deadline')
 
-    with column3:
-        st.write('\n')
-        st.write('\n')
-        add = st.button('Add', key="add_task")
+    # Add Button (Prevents Duplicate Entries)
+    if st.button('Add Task'):
+        if todoinput and todoinput not in st.session_state.tasks and not st.session_state.task_added:
+            st.session_state.tasks.append(todoinput)
+            st.session_state.dates.append(date)
+            st.session_state.task_added = True  # Prevents duplicate task entry
+            st.rerun()
 
-    if add and todoinput and todoinput not in st.session_state.tasks:
-        st.session_state.tasks.append(todoinput)
-        st.session_state.dates.append(date)
-        st.rerun()
+    # Reset task_added to allow next addition
+    if not st.button('Dummy Button', key="dummy", disabled=True):  
+        st.session_state.task_added = False  
 
+    # Function to remove task
     def remove_task(index):
         del st.session_state.tasks[index]
         del st.session_state.dates[index]
         st.rerun()
 
+    # Display tasks
     for index, (task, due_date) in enumerate(zip(st.session_state.tasks, st.session_state.dates)):
         col1, col2, col3 = st.columns([2, 1, 1])
-        
+
         with col2:
-            if st.button(f'Remove', key=f"remove_{index}"):
+            if st.button('Remove', key=f"remove_{index}"):
                 remove_task(index)
 
         with col1:
@@ -52,6 +62,7 @@ if page == 'To Do List':
         with col3:
             st.write(due_date)
 
+    # AI Task Breakdown
     if st.session_state.tasks:
         last_task = st.session_state.tasks[-1]
 
@@ -74,6 +85,5 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
-
 
 
