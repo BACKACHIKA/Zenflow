@@ -40,6 +40,8 @@ if page == 'To Do List':
 
             st.session_state.tasks.remove(task_name)
             st.session_state.dates.remove(dates)
+            st.session_state.tasks.remove(task_name)
+            st.session_state.dates.remove(dates)
             st.rerun()
 
 
