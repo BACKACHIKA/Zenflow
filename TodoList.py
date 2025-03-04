@@ -31,11 +31,17 @@ if page == 'To Do List':
     if 'dates' not in st.session_state:
         st.session_state.dates = []
 
-    if add:
+    if 'add_clicked' not in st.session_state:
+        st.session_state.add_clicked = False
+
+    if add and not st.session_state.add_clicked:
+        st.session_state.add_clicked = True
         st.session_state.tasks.append(todoinput)
         st.session_state.dates.append(date)
         todoinput = ""
-        
+        st.rerun()
+
+    st.session_state.add_clicked = False #reset the add clicked state.
 
     def remove_task(task, date):
         st.session_state.tasks.remove(task)
@@ -44,12 +50,12 @@ if page == 'To Do List':
 
     task_display = st.empty()
     with task_display.container():
-        for i, task in enumerate(st.session_state.tasks): # Changed to enumerate
+        for i, task in enumerate(st.session_state.tasks):
             col1, col2, col3 = st.columns([2, 1, 1])
 
             with col2:
                 st.button('Remove', key=str(shortuuid.uuid()),
-                          on_click=lambda t=task, d=st.session_state.dates[i]: remove_task(t, d)) # Changed lambda
+                          on_click=lambda t=task, d=st.session_state.dates[i]: remove_task(t, d))
 
             with col1:
                 st.write(task)
