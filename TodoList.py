@@ -40,8 +40,7 @@ if page == 'To Do List':
 
             st.session_state.tasks.remove(task_name)
             st.session_state.dates.remove(dates)
-            st.session_state.tasks.remove(task_name)
-            st.session_state.dates.remove(dates)
+          
             st.rerun()
 
 
@@ -53,7 +52,7 @@ if page == 'To Do List':
 
         with col2:
             if st.button('Remove', key=shortuuid.uuid()):
-                remove_task(st.session_state.tasks[task],st.session_state.dates[task])
+                remove_task(task,task)
 
         with col1:
             st.write(st.session_state.tasks[task])
