@@ -35,11 +35,11 @@ if page == 'To Do List':
             st.rerun()
 
 
-    def remove_task(task_name):
+    def remove_task(task_name,dates):
 
 
-            st.session_state.tasks.pop(task_name)
-            st.session_state.dates.pop(task_name)
+            st.session_state.tasks.remove(task_name)
+            st.session_state.dates.remove(dates)
             st.rerun()
 
 
@@ -51,7 +51,7 @@ if page == 'To Do List':
 
         with col2:
             if st.button('Remove', key=shortuuid.uuid()):
-                remove_task(st.session_state.tasks[task])
+                remove_task(st.session_state.tasks[task],st.session_state.dates[task])
 
         with col1:
             st.write(st.session_state.tasks[task])
@@ -78,6 +78,8 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
+
 
 
 
