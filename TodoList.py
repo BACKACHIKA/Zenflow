@@ -41,12 +41,12 @@ if page == 'To Do List':
         todoinput = ""
         st.rerun()
 
-    st.session_state.add_clicked = False #reset the add clicked state.
+    st.session_state.add_clicked = False
 
     def remove_task(task, date):
-        st.session_state.tasks.remove(task)
-        st.session_state.dates.remove(date)
-        st.rerun()
+        index_to_remove = st.session_state.tasks.index(task)
+        del st.session_state.tasks[index_to_remove]
+        del st.session_state.dates[index_to_remove]
 
     task_display = st.empty()
     with task_display.container():
@@ -88,3 +88,4 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
