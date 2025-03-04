@@ -3,8 +3,6 @@ import streamlit as st
 import google.generativeai as genai
 import shortuuid
 from PIL import Image
-
-# Configure AI Model once
 genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -38,11 +36,6 @@ if page == 'To Do List':
             st.session_state.task_added = True  # Prevents duplicate task entry
             st.rerun()
 
-    # Reset task_added to allow next addition
-    if not st.button('Dummy Button', key="dummy", disabled=True):  
-        st.session_state.task_added = False  
-
-    # Function to remove task
     def remove_task(index):
         del st.session_state.tasks[index]
         del st.session_state.dates[index]
