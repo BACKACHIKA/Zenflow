@@ -38,8 +38,8 @@ if page == 'To Do List':
     def remove_task(task_name):
 
 
-            st.session_state.tasks.remove(task_name)
-            st.session_state.dates.remove(task_name)
+            st.session_state.tasks.pop(task_name)
+            st.session_state.dates.pop(task_name)
             st.rerun()
 
 
