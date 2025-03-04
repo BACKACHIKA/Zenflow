@@ -63,21 +63,14 @@ if page == 'To Do List':
             with col3:
                 st.write(st.session_state.dates[i])
 
-            trimmed_task = task.strip() #trim whitespace
-
-            if trimmed_task: # Check if the trimmed task is not empty
+            if task: #added check to see if task exists
                 genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
                 model = genai.GenerativeModel("gemini-1.5-flash")
                 response = model.generate_content(
-                    'Break down the following task: ' + trimmed_task +
+                    'Break down the following task: ' + task +
                     ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.Give the format as such that there is a new line after every stage.If no task is given,say Please enter a task above.')
 
-                if "Please enter a task above" in response.text:
-                    st.write("AI could not break down this task.")
-                else:
-                    st.text_area('AI Task Breakdown', response.text)
-            else:
-                st.write("No task to process.") #add message when no task exists.
+                st.text_area('AI Task Breakdown', response.text)
 
 elif page == 'AI Text Extraction':
     st.title('Image to text:')
