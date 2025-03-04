@@ -38,9 +38,10 @@ if page == 'To Do List':
             index = st.session_state.tasks.index(task_name)
             del st.session_state.tasks[index]
             del st.session_state.dates[index]
-            st.rerun()
+            st.rerun()  # Ensures the UI updates immediately
 
-    for task in st.session_state.tasks:
+    tasks_copy = st.session_state.tasks[:]  # Copy to avoid iteration errors
+    for task in tasks_copy:
         task_uuid = shortuuid.uuid()  # Keep unique key for remove button
 
         col1, col2, col3 = st.columns([2, 1, 1])
@@ -53,8 +54,9 @@ if page == 'To Do List':
             st.write(task)
 
         with col3:
-            index = st.session_state.tasks.index(task)
-            st.write(st.session_state.dates[index])
+            index = st.session_state.tasks.index(task) if task in st.session_state.tasks else -1
+            if index != -1:
+                st.write(st.session_state.dates[index])
 
         # Generate AI Breakdown on the spot (not stored)
         response = model.generate_content(
