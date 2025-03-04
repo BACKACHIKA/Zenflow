@@ -36,13 +36,12 @@ if page == 'To Do List':
     def remove_task(task_name):
         if task_name in st.session_state.tasks:
             index = st.session_state.tasks.index(task_name)
-            st.session_state.tasks.pop(index)
-            st.session_state.dates.pop(index)
+            del st.session_state.tasks[index]
+            del st.session_state.dates[index]
             st.rerun()
 
-    for i in range(len(st.session_state.tasks)):
-        task = st.session_state.tasks[i]
-        task_uuid = shortuuid.uuid()  # Unique key for remove button
+    for task in st.session_state.tasks:
+        task_uuid = shortuuid.uuid()  # Keep unique key for remove button
 
         col1, col2, col3 = st.columns([2, 1, 1])
 
@@ -54,7 +53,8 @@ if page == 'To Do List':
             st.write(task)
 
         with col3:
-            st.write(st.session_state.dates[i])
+            index = st.session_state.tasks.index(task)
+            st.write(st.session_state.dates[index])
 
         # Generate AI Breakdown on the spot (not stored)
         response = model.generate_content(
