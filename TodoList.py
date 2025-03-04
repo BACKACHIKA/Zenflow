@@ -36,7 +36,7 @@ if page == 'To Do List':
 
 
     def remove_task(task_name):
-        if task_name in range(len(st.session_state.tasks)):
+
 
             st.session_state.tasks.remove(task_name)
             st.session_state.dates.remove(task_name)
