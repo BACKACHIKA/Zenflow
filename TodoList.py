@@ -60,12 +60,12 @@ if page == 'To Do List':
 
 
         response = model.generate_content(
-            f'Break down the following task: {task} into chunks that can be completed in pomodoro sessions. '
+            f'Break down the following task: {st.session_state.tasks[task]} into chunks that can be completed in pomodoro sessions. '
             'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
             'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
             'If no task is given, say Please enter a task above.'
         )
-        st.text_area(f'AI Task Breakdown for: {task}', response.text, height=200)
+        st.text_area(f'AI Task Breakdown for: {st.session_state.tasks[task]}', response.text, height=200)
 
 elif page == 'AI Text Extraction':
     st.title('Image to Text')
@@ -78,5 +78,7 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
+
 
 
