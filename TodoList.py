@@ -3,7 +3,6 @@ import google.generativeai as genai
 import shortuuid
 from PIL import Image
 
-# Configure AI Model once
 genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -18,62 +17,51 @@ if page == 'To Do List':
         st.session_state.tasks = []
     if 'dates' not in st.session_state:
         st.session_state.dates = []
-    if 'ai_breakdowns' not in st.session_state:
-        st.session_state.ai_breakdowns = {}
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        todoinput = st.text_input('Enter a task:')
+    column1, column2, column3 = st.columns(3)
     
-    with col2:
+    with column2:
+        todoinput = st.text_input('Enter a task:')
         date = st.date_input('Enter the deadline')
 
-    if st.button('Add Task'):
-        if todoinput and todoinput not in st.session_state.tasks:
-            st.session_state.tasks.append(todoinput)
-            st.session_state.dates.append(date)
+    with column3:
+        st.write('\n')
+        st.write('\n')
+        add = st.button('Add', key="add_task")
 
-            # Ensure AI breakdown is generated before rerun
-            response = model.generate_content(
-                f'Break down the following task: {todoinput} into chunks that can be completed in pomodoro sessions. '
-                'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-                'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-                'If no task is given, say Please enter a task above.'
-            )
-            st.session_state.ai_breakdowns[todoinput] = response.text
-            
-            st.rerun()
+    if add and todoinput and todoinput not in st.session_state.tasks:
+        st.session_state.tasks.append(todoinput)
+        st.session_state.dates.append(date)
+        st.rerun()
 
-    def remove_task(task_name):
-        if task_name in st.session_state.tasks:
-            index = st.session_state.tasks.index(task_name)
+    def remove_task(index):
+        del st.session_state.tasks[index]
+        del st.session_state.dates[index]
+        st.rerun()
 
-            if task_name in st.session_state.ai_breakdowns:
-                del st.session_state.ai_breakdowns[task_name]
-
-            del st.session_state.tasks[index]
-            del st.session_state.dates[index]
-
-            st.rerun()
-
-    for task in st.session_state.tasks:
+    for index, (task, due_date) in enumerate(zip(st.session_state.tasks, st.session_state.dates)):
         col1, col2, col3 = st.columns([2, 1, 1])
-
+        
         with col2:
-            if st.button('Remove', key=str(shortuuid.uuid())):
-                remove_task(task)
+            if st.button(f'Remove', key=f"remove_{index}"):
+                remove_task(index)
 
         with col1:
             st.write(task)
 
         with col3:
-            index = st.session_state.tasks.index(task)
-            st.write(st.session_state.dates[index])
+            st.write(due_date)
 
-        # Display AI Breakdown for each task
-        if task in st.session_state.ai_breakdowns:
-            st.text_area(f'AI Task Breakdown for: {task}', st.session_state.ai_breakdowns[task], height=200)
+    if st.session_state.tasks:
+        last_task = st.session_state.tasks[-1]
+
+        response = model.generate_content(
+            f'Break down the following task: {last_task} into chunks that can be completed in pomodoro sessions. '
+            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+            'If no task is given, say Please enter a task above.'
+        )
+        st.text_area('AI Task Breakdown', response.text)
 
 elif page == 'AI Text Extraction':
     st.title('Image to Text')
@@ -86,3 +74,5 @@ elif page == 'AI Text Extraction':
 
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
+
