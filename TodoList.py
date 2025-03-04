@@ -68,8 +68,7 @@ if page == 'To Do List':
                 model = genai.GenerativeModel("gemini-1.5-flash")
                 response = model.generate_content(
                     'Break down the following task: ' + task +
-                    ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.Give the format as such that there is a new line after every stage.If no task is given,say Please enter a task above.')
-
+                    ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.Give the format as such that there is a new line after every stage.If no task is given,say Please enter a task above.However if a rask is given,,no matter how vague,you must break it down.')
                 st.text_area('AI Task Breakdown', response.text)
 
 elif page == 'AI Text Extraction':
