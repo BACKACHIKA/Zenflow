@@ -9,7 +9,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 
-tab1, tab2= st.tabs(['To Do List(With AI-powered Task Breakdown','Handwriting Text Extraction'])
+tab1, tab2= st.tabs(['AI Task Breakdown List,'Handwriting Text Extraction'])
 
 
 with tab1:
