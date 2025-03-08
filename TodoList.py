@@ -65,7 +65,7 @@ with tab1:
             f'Break down the following task: {st.session_state.tasks[task]} into chunks that can be completed in pomodoro sessions. '
             'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
             'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-            'If no task is given, say Please enter a task above.'
+            'If no task is given, say Please enter a task above.However if a task is given you must break it down'
         )
         st.text_area(f'AI Task Breakdown for: {st.session_state.tasks[task]}', response.text, height=200)
 
