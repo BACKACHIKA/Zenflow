@@ -38,8 +38,7 @@ with tab1:
 
 
     def remove_task(task_name,dates):
-            st.write('Hi')
-            st.write(st.session_state.tasks)
+            
             st.session_state.tasks.pop(task_name)
             st.session_state.dates.pop(dates)
             st.rerun()
