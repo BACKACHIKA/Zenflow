@@ -1,90 +1,85 @@
 import streamlit as st
 import google.generativeai as genai
 import shortuuid
+from PIL import Image
 
-column1, column2, column3 = st.columns(3)
 
-st.sidebar.title('Choose a tool:')
-page = st.sidebar.selectbox('Go to', ('To Do List', 'AI Text Extraction'))
+genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-if page == 'To Do List':
-    st.title('To Do list:')
-    st.sidebar.write('This is a to-do list app that uses AI to break down your tasks into simple,manageable sub-tasks.) ')
 
-    if 'key' not in st.session_state:
-        st.session_state.key = []
 
-    column1, column2, column3 = st.columns(3)
+tab1, tab2= st.tabs(['To Do List(With AI-powered Task Breakdown','Handwriting Text Extraction'])
 
-    with column2:
-        todoinput = st.text_input('Firstly,enter a task:')
-        date = st.date_input('Enter the deadline')
 
-    with column3:
-        st.write('\n')
-        st.write('\n')
-        add = st.button('Add', icon=":material/add:")
+with tab1:
+    st.title('To Do List')
+    st.write(
+        'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
 
     if 'tasks' not in st.session_state:
         st.session_state.tasks = []
-
     if 'dates' not in st.session_state:
         st.session_state.dates = []
 
-    if 'add_clicked' not in st.session_state:
-        st.session_state.add_clicked = False
+    col1, col2 = st.columns(2)
 
-    if add and not st.session_state.add_clicked:
-        st.session_state.add_clicked = True
-        st.session_state.tasks.append(todoinput)
-        st.session_state.dates.append(date)
-        todoinput = ""
-        st.rerun()
+    with col1:
+        todoinput = st.text_input('Enter a task:')
 
-    st.session_state.add_clicked = False
+    with col2:
+        date = st.date_input('Enter the deadline')
 
-    def remove_task(task, date):
-        index_to_remove = st.session_state.tasks.index(task)
-        del st.session_state.tasks[index_to_remove]
-        del st.session_state.dates[index_to_remove]
+    if st.button('Add Task'):
+        if todoinput and todoinput not in st.session_state.tasks:
+            st.session_state.tasks.append(todoinput)
+            st.session_state.dates.append(date)
+            st.rerun()
 
-    task_display = st.empty()
-    with task_display.container():
-        for i, task in enumerate(st.session_state.tasks):
-            col1, col2, col3 = st.columns([2, 1, 1])
 
-            with col2:
-                st.button('Remove', key=str(shortuuid.uuid()),
-                          on_click=lambda t=task, d=st.session_state.dates[i]: remove_task(t, d))
+    def remove_task(task_name,dates):
 
-            with col1:
-                st.write(task)
 
-            with col3:
-                st.write(st.session_state.dates[i])
+            st.session_state.tasks.pop(task_name)
+            st.session_state.dates.pop(dates)
+            st.rerun()
 
-            if task: #added check to see if task exists
-                genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
-                model = genai.GenerativeModel("gemini-1.5-flash")
-                response = model.generate_content(
-                    'Break down the following task: ' + task +
-                    ' into chunks that can be completed in pomodoro sessions. Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage.Give the format as such that there is a new line after every stage.If no task is given,say Please enter a task above.However if a rask is given,,no matter how vague,you must break it down.')
-                st.text_area('AI Task Breakdown', response.text)
 
-elif page == 'AI Text Extraction':
-    st.title('Image to text:')
-    st.sidebar.write('This is an AI-powered tool that can extract text from an image(including handwritten text).')
-    import streamlit as st
-    from PIL import Image
-    import google.generativeai as genai
+
+    for task in range(len(st.session_state.tasks)):
+
+
+        col1, col2, col3 = st.columns([2, 1, 1])
+
+        with col2:
+            if st.button('Remove', key=shortuuid.uuid()):
+                remove_task(task,task)
+
+        with col1:
+            st.write(st.session_state.tasks[task])
+
+
+
+
+        response = model.generate_content(
+            f'Break down the following task: {st.session_state.tasks[task]} into chunks that can be completed in pomodoro sessions. '
+            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+            'If no task is given, say Please enter a task above.'
+        )
+        st.text_area(f'AI Task Breakdown for: {st.session_state.tasks[task]}', response.text, height=200)
+
+with tab2:
+    st.title('Image to Text')
+    st.write('This is an AI-powered tool that extracts text from an image (including handwritten text).')
 
     text = st.camera_input('Take a picture to scan:')
 
     if text:
         img = Image.open(text)
 
-        genai.configure(api_key='AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I')
-        model = genai.GenerativeModel("gemini-1.5-flash")
-
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
+
+
+
