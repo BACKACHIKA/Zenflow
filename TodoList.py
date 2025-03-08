@@ -33,8 +33,10 @@ with tab1:
             st.rerun()
 
     def remove_task(task_name):
+        st.write("Removing task:", task_name)  # Debug statement
         st.session_state.tasks.pop(task_name)
         st.session_state.dates.pop(task_name)
+        st.write("Tasks after removal:", st.session_state.tasks)  # Debug statement
         st.rerun()
 
     for task in range(len(st.session_state.tasks)):
@@ -42,6 +44,7 @@ with tab1:
 
         with col2:
             if st.button('Remove', key=shortuuid.uuid()):
+                st.write("Remove button clicked for task:", task)  # Debug statement
                 remove_task(task)
 
         with col1:
