@@ -8,12 +8,6 @@ genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
-hide_github_icon = """
-#GithubIcon {
-  visibility: hidden;
-}
-"""
-st.markdown(hide_github_icon, unsafe_allow_html=True)
 tab1, tab2= st.tabs(['AI Powered To Do list','Handwriting Text Extraction'])
 
 
