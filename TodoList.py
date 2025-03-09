@@ -56,6 +56,7 @@ with tab1:
 
         with col1:
             st.write(st.session_state.tasks[task])
+        with col3:
             st.write(st.session_state.dates[task])
 
 
