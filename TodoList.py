@@ -18,9 +18,6 @@ else:
 
 
 
-file_name = f"{user}.json"
-with open(file_name, "w") as file:
-    json.dump(data, file)
 
 
 
@@ -42,9 +39,14 @@ with tab1:
 
     if st.button("Add Task"):
         
-            user_data["tasks"].append(todoinput)
-            user_data["dates"].append(str(deadline))
-            save_user_data(user_data)
+        user_data["tasks"].append(todoinput)
+        user_data["dates"].append(str(deadline))
+        with open(user, "w") as file:
+             json.dump(data, user)
+
+        
+            
+
             st.rerun()
 
     while taskindex < len(user_data["tasks"]):
