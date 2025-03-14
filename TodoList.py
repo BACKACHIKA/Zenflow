@@ -13,7 +13,7 @@ file_name = f"{user}.json"
     
 if os.path.exists(user):
     with open(user, "r") as file:
-        userdata=json.load(file)
+        userdata=json.load(user)
 else:
     userdata={"tasks": [], "dates": []}
 
