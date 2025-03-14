@@ -5,7 +5,7 @@ from datetime import date
 from PIL import Image
 import shortuuid
 
-
+taskindex=0
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
 def load_user_data(user):
     file_name = f"tasks_data_{user}.json"
@@ -46,7 +46,7 @@ with tab1:
             save_user_data(username, user_data)
             st.rerun()
 
-    while task_index < len(user_data["tasks"]):
+    while taskindex < len(user_data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
 
         with col1:
@@ -60,7 +60,7 @@ with tab1:
                 save_user_data(username, user_data)
                 st.rerun()
 
-        task_index += 1
+        taskindex += 1
 
 with tab2:  
     st.title("Handwriting Text Extraction")
