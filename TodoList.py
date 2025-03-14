@@ -38,7 +38,7 @@ with tab1:
             with open(user, "w") as file:
                 json.dump(userdata, file)
              
-    userdata=json.dumps(user)
+    userdata=json.loads(user)
     for i in range(len(userdata["tasks"])):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
