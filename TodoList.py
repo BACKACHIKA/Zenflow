@@ -31,14 +31,14 @@ with tab1:
 
     # Add Task button
     if st.button("Add Task"):
-        if todoinput:  # Ensure the task input is not empty
+        
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
             with open(user, "w") as file:
                 json.dump(userdata, file)
             st.rerun() 
 
-    # Display tasks
+ 
     for i in range(len(userdata["tasks"])):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
