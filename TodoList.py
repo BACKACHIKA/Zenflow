@@ -39,7 +39,7 @@ with tab1:
                 json.dump(userdata, file)
              
 
-    usabledata=json.loads(user)
+    usabledata=json.loads(userdata)
     for i in range(len(usabledata["tasks"])):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
