@@ -15,7 +15,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
 
 if os.path.exists(user):
-    with open(user, "r") as file:
+    with open(userdata, "r") as file:
         userdata = json.load(file)
 else:
     userdata = {"tasks": [], "dates": []}
@@ -35,8 +35,7 @@ with tab1:
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
 
-            with open(user, "w") as file:
-                json.dump(userdata, file)
+          
  
     
     for i in range(len(userdata["tasks"])):
