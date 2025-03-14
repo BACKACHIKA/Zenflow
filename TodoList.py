@@ -39,6 +39,7 @@ with tab1:
           
  
     st.write(type(userdata))
+    userdata=json.loads(userdata)
     for i in range(len(userdata["tasks"])):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
