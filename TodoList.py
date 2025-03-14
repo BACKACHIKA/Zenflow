@@ -4,7 +4,7 @@ import os
 from datetime import date
 from PIL import Image
 import shortuuid
-
+import google.generativeai as genai
 
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
