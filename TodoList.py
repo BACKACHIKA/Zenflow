@@ -38,13 +38,13 @@ with tab1:
     with col1:
         todoinput = st.text_input("Enter a task:")
     with col2:
-        deadline = st.date_input("Enter the deadline", value=date.today())
+        deadline = st.date_input("Enter the deadline")
 
     if st.button("Add Task"):
         
             user_data["tasks"].append(todoinput)
             user_data["dates"].append(str(deadline))
-            save_user_data(username, user_data)
+            save_user_data(user_data)
             st.rerun()
 
     while taskindex < len(user_data["tasks"]):
