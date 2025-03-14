@@ -3,6 +3,7 @@ import json
 import os
 from datetime import date
 from PIL import Image
+import shortuuid
 
 
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
