@@ -43,12 +43,12 @@ with tab1:
     for i in range(len(user)):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
-            st.write(user["tasks"][i])
+            st.write(user[i])
             
         with col3:
-            st.write(user["dates"][i])
+            st.write(user[i])
         response = model.generate_content(
-            f'Break down the following task: {user["tasks"][i]} into chunks that can be completed in. sessions. '
+            f'Break down the following task: {user[i]} into chunks that can be completed in. sessions. '
             'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
             'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
             'However if a task is given,you must break it down.Like you need to.Even if its a repeat task,you need to.No matter what break down the task.Don\'t repeat the prompt in your response ever.'
