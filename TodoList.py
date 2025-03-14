@@ -4,32 +4,23 @@ import os
 from datetime import date
 from PIL import Image
 import shortuuid
-st.title("AI Powered To Do List ")
-taskindex=0
-user=f'{shortuuid.uuid()}.json'
 
-tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
-file_name = f"{user}.json"
-    
+# Title
+st.title("AI Powered To-Do List")
+user = f'{shortuuid.uuid()}.json'
+
+# Tabs
+tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
+
+# User data initialization
 if os.path.exists(user):
     with open(user, "r") as file:
-        userdata=json.load(user)
+        userdata = json.load(file)
 else:
-    userdata={"tasks": [], "dates": []}
+    userdata = {"tasks": [], "dates": []}
 
-
-
-user=json.dumps(str(userdata))
-
-
-
-
-
-username=shortuuid.uuid()
-with tab1: 
-    
-
-    st.subheader("To Do List")
+with tab1:
+    st.subheader("To-Do List")
 
     # Task input section
     col1, col2 = st.columns(2)
@@ -38,45 +29,42 @@ with tab1:
     with col2:
         deadline = st.date_input("Enter the deadline")
 
+    # Add Task button
     if st.button("Add Task"):
-        
-        userdata["tasks"].append(todoinput)
-        userdata["dates"].append(str(deadline))
-        with open(user, "w") as file:
-             user=json.dumps(userdata)        
-            
+        if todoinput:  # Ensure the task input is not empty
+            userdata["tasks"].append(todoinput)
+            userdata["dates"].append(str(deadline))
+            with open(user, "w") as file:
+                json.dump(userdata, file)
+            st.experimental_rerun()  # Reload app to reflect changes
 
-
-
-        for i in range(len(userdata["tasks"])):
-          col1, col2, col3 = st.columns([2, 1, 1])
-
-          with col1:
-            st.write(user_data["tasks"][i])
-            
-          with col3:
-            st.write(user_data["dates"][i])
-          with col2:
-            if st.button("Remove", key=f"remove_{task_index}"):
-                user_data["tasks"].pop(task_index)
-                user_data["dates"].pop(task_index)
-
+    # Display tasks
+    for i in range(len(userdata["tasks"])):
+        col1, col2, col3 = st.columns([2, 1, 1])
+        with col1:
+            st.write(userdata["tasks"][i])
+        with col3:
+            st.write(userdata["dates"][i])
+        with col2:
+            if st.button("Remove", key=f"remove_{i}"):
+                userdata["tasks"].pop(i)
+                userdata["dates"].pop(i)
                 with open(user, "w") as file:
-                 user=json.dumps(userdata)
-                st.rerun()
+                    json.dump(userdata, file)
+                st.experimental_rerun()
 
+with tab2:
+ st.title('Image to Text')
+    st.write('This is an AI-powered tool that extracts text from an image (including handwritten text).')
 
-with tab2:  
-    st.title("Handwriting Text Extraction")
-    st.write("Upload an image to extract text (including handwritten text):")
-    uploaded_image = st.camera_input("Take a picture")
-    if uploaded_image:
-        img = Image.open(uploaded_image)
-        st.image(img, caption="Uploaded Image", use_column_width=True)
+    text = st.camera_input('Take a picture to scan:')
 
-        # Handwriting extraction placeholder logic
-        st.write("Extracted Text:")
-        st.text("This is where the extracted text will appear. Replace this with your AI model logic for handwriting recognition.")
+    if text:
+        img = Image.open(text)
+
+        responses = model.generate_content(contents=["What text is written in the image?", img])
+        st.write(responses.text)
+
 
 
 
