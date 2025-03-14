@@ -16,7 +16,7 @@ def load_user_data(user):
 
 
 def save_user_data(user, data):
-    file_name = "shortuuid.shortuuid()}.json"
+    file_name = f"{user}.json"
     with open(file_name, "w") as file:
         json.dump(data, file)
 
@@ -25,7 +25,7 @@ st.write("Manage your tasks and extract text from handwritten images using this 
 
 
 
-
+username=shortuuid.shortuuid()
 with tab1: 
     user_data = load_user_data(username)
 
@@ -43,9 +43,8 @@ with tab1:
             user_data["tasks"].append(todoinput)
             user_data["dates"].append(str(deadline))
             save_user_data(username, user_data)
-            st.experimental_rerun()
+            st.rerun()
 
-    # Display tasks    task_index = 0
     while task_index < len(user_data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
 
@@ -58,7 +57,7 @@ with tab1:
                 user_data["tasks"].pop(task_index)
                 user_data["dates"].pop(task_index)
                 save_user_data(username, user_data)
-                st.experimental_rerun()
+                st.rerun()
 
         task_index += 1
 
