@@ -36,7 +36,7 @@ with tab1:
             userdata["dates"].append(str(deadline))
             with open(user, "w") as file:
                 json.dump(userdata, file)
-            st.experimental_rerun()  # Reload app to reflect changes
+            st.rerun() 
 
     # Display tasks
     for i in range(len(userdata["tasks"])):
