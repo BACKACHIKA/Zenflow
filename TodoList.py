@@ -37,7 +37,7 @@ with tab1:
 
             with open(user, "w") as file:
                 json.dump(userdata, file)
-    with open(user, "r") as file:
+    with open(userdata, "r") as file:
                 userdata=json.loads(file)          
     
     for i in range(len(userdata["tasks"])):
