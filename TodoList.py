@@ -43,6 +43,8 @@ with tab1:
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(userdata["tasks"][i])
+        with col3:
+            st.write(userdata["dates"][i])
             
 
         response = model.generate_content(
