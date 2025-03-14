@@ -48,13 +48,14 @@ with tab1:
 
              st.rerun()
 
-while taskindex < len(userdata["tasks"]):
+for i in range(len(userdata["tasks"])):
         col1, col2, col3 = st.columns([2, 1, 1])
 
         with col1:
-            st.write(user_data["tasks"][task_index])
+            st.write(user_data["tasks"][i])
+            print(user_data["tasks"][i])(user_data["tasks"][i])
         with col3:
-            st.write(user_data["dates"][task_index])
+            st.write(user_data["dates"][i])
         with col2:
             if st.button("Remove", key=f"remove_{task_index}"):
                 user_data["tasks"].pop(task_index)
@@ -62,7 +63,6 @@ while taskindex < len(userdata["tasks"]):
                 save_user_data(username, user_data)
                 st.rerun()
 
-        taskindex += 1
 
 with tab2:  
     st.title("Handwriting Text Extraction")
