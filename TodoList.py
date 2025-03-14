@@ -4,16 +4,16 @@ import os
 from datetime import date
 from PIL import Image
 import shortuuid
-
+st.title("AI Powered To Do List ")
 taskindex=0
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
-def load_user_data(user):
-    file_name = f"tasks_data_{user}.json"
-    if os.path.exists(file_name):
-        with open(file_name, "r") as file:
-            return json.load(file)
-    else:
-        return {"tasks": [], "dates": []}
+file_name = f"tasks_data_{user}.json"
+    
+if os.path.exists(file_name):
+    with open(file_name, "r") as file:
+        user_data=json.load(file)
+else:
+    return {"tasks": [], "dates": []}
 
 
 def save_user_data(user, data):
@@ -21,14 +21,14 @@ def save_user_data(user, data):
     with open(file_name, "w") as file:
         json.dump(data, file)
 
-st.title("AI Powered To Do List ")
-st.write("Manage your tasks and extract text from handwritten images using this app!")
+
+
 
 
 
 username=shortuuid.uuid()
 with tab1: 
-    user_data = load_user_data(username)
+    
 
     st.subheader("To Do List")
 
