@@ -9,7 +9,7 @@ taskindex=0
 user=f'{shortuuid.uuid()}.json'
 
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
-file_name = f"tasks_data_{user}.json"
+file_name = f"{user}.json"
     
 if os.path.exists(file_name):
     with open(file_name, "r") as file:
