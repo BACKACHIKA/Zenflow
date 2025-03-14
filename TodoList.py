@@ -43,9 +43,7 @@ with tab1:
         userdata["tasks"].append(todoinput)
         userdata["dates"].append(str(deadline))
         with open(user, "w") as file:
-             json.dumps(userdata, user)
-
-        
+             user=json.dumps(userdata)        
             
 
              st.rerun()
