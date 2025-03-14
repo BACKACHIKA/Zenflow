@@ -6,6 +6,7 @@ from PIL import Image
 import shortuuid
 st.title("AI Powered To Do List ")
 taskindex=0
+user=shortuuid.uuid()
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
 file_name = f"tasks_data_{user}.json"
     
