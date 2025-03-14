@@ -39,7 +39,7 @@ with tab1:
         deadline = st.date_input("Enter the deadline")
 
     if st.button("Add Task"):
-        
+        st.write('Hi')
         userdata["tasks"].append(todoinput)
         userdata["dates"].append(str(deadline))
         with open(user, "w") as file:
@@ -53,14 +53,16 @@ with tab1:
 
           with col1:
             st.write(user_data["tasks"][i])
-            print(user_data["tasks"][i])(user_data["tasks"][i])
+            
           with col3:
             st.write(user_data["dates"][i])
           with col2:
             if st.button("Remove", key=f"remove_{task_index}"):
                 user_data["tasks"].pop(task_index)
                 user_data["dates"].pop(task_index)
-                save_user_data(username, user_data)
+
+                with open(user, "w") as file:
+                 user=json.dumps(userdata)
                 st.rerun()
 
 
