@@ -7,6 +7,7 @@ import shortuuid
 st.title("AI Powered To Do List ")
 taskindex=0
 user=f'{shortuuid.uuid()}.json'
+
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
 file_name = f"tasks_data_{user}.json"
     
@@ -18,7 +19,7 @@ else:
 
 
 
-
+json.dump(userdata, user)
 
 
 
