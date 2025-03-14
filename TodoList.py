@@ -4,7 +4,7 @@ import os
 from datetime import date
 from PIL import Image
 
-# Function to load user-specific data from a JSON file
+tab1,tab2=st.tabs('AI Powered To-Do List')
 def load_user_data(user):
     file_name = f"tasks_data_{user}.json"
     if os.path.exists(file_name):
@@ -25,7 +25,7 @@ st.write("Manage your tasks and extract text from handwritten images using this 
 # User input for username
 username = st.text_input("Enter your username to continue:", placeholder="Type your name here")
 if username:
-    # Load data for the specific user
+   with tab1: 
     user_data = load_user_data(username)
 
     st.subheader("To Do List")
@@ -44,8 +44,7 @@ if username:
             save_user_data(username, user_data)
             st.experimental_rerun()
 
-    # Display tasks
-    task_index = 0
+    # Display tasks    task_index = 0
     while task_index < len(user_data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
 
@@ -62,10 +61,10 @@ if username:
 
         task_index += 1
 
-    # Handwriting Text Extraction
+   with tab2:  
     st.subheader("Handwriting Text Extraction")
     st.write("Upload an image to extract text (including handwritten text):")
-    uploaded_image = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+    uploaded_image = st.camera_input("Take a picture")
     if uploaded_image:
         img = Image.open(uploaded_image)
         st.image(img, caption="Uploaded Image", use_column_width=True)
