@@ -34,6 +34,7 @@ with tab1:
         
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
+        st.write('Hi')
             with open(user, "w") as file:
                 json.dump(userdata, file)
             st.rerun() 
@@ -51,7 +52,7 @@ with tab1:
                 userdata["dates"].pop(i)
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.experimental_rerun()
+                st.rerun()
 
 with tab2:
     st.title('Image to Text')
