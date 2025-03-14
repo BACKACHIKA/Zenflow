@@ -47,7 +47,7 @@ with tab1:
         
             
 
-            st.rerun()
+             st.rerun()
 
 while taskindex < len(user_data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
