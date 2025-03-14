@@ -17,10 +17,10 @@ else:
     user_data={"tasks": [], "dates": []}
 
 
-def save_user_data(user, data):
-    file_name = f"{user}.json"
-    with open(file_name, "w") as file:
-        json.dump(data, file)
+
+file_name = f"{user}.json"
+with open(file_name, "w") as file:
+    json.dump(data, file)
 
 
 
