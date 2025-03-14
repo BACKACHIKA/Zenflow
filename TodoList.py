@@ -40,7 +40,7 @@ with tab1:
              
 
  
-    for i in range(len(user["tasks"])):
+    for i in range(len(user["tasks"][i])):
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(user["tasks"][i])
