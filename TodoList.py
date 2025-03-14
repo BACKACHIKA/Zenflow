@@ -24,9 +24,9 @@ st.title("AI Powered To Do List ")
 st.write("Manage your tasks and extract text from handwritten images using this app!")
 
 
-username = st.text_input("Enter your username to continue:", placeholder="Type your name here")
-if username:
-   with tab1: 
+
+
+with tab1: 
     user_data = load_user_data(username)
 
     st.subheader("To Do List")
@@ -62,7 +62,7 @@ if username:
 
         task_index += 1
 
-   with tab2:  
+with tab2:  
     st.title("Handwriting Text Extraction")
     st.write("Upload an image to extract text (including handwritten text):")
     uploaded_image = st.camera_input("Take a picture")
@@ -73,8 +73,7 @@ if username:
         # Handwriting extraction placeholder logic
         st.write("Extracted Text:")
         st.text("This is where the extracted text will appear. Replace this with your AI model logic for handwriting recognition.")
-else:
-    st.warning("Please enter your username to access the app.")
+
 
 
 
