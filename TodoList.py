@@ -35,7 +35,7 @@ with tab1:
             st.write('Hi')
             with open(user, "w") as file:
                 json.dump(userdata, file)
-            st.rerun() 
+             
 
  
     for i in range(len(userdata["tasks"])):
