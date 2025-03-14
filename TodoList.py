@@ -1,93 +1,67 @@
 import streamlit as st
-import google.generativeai as genai
-import shortuuid
-from PIL import Image
 import json
 import os
+from datetime import date
 
-# Configure Generative AI
-genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-# Filepath for storing data
-data_file = "tasks_data.json"
-
-# Load data from JSON file
-def load_data():
-    if os.path.exists(data_file):
-        with open(data_file, "r") as file:
+# Function to load user-specific data from a JSON file
+def load_user_data(user):
+    file_name = f"tasks_data_{user}.json"
+    if os.path.exists(file_name):
+        with open(file_name, "r") as file:
             return json.load(file)
     else:
         return {"tasks": [], "dates": []}
 
-# Save data to JSON file
-def save_data(data):
-    with open(data_file, "w") as file:
+# Function to save user-specific data to a JSON file
+def save_user_data(user, data):
+    file_name = f"tasks_data_{user}.json"
+    with open(file_name, "w") as file:
         json.dump(data, file)
 
-# Initialize data
-data = load_data()
+# Sidebar: User Login
+st.sidebar.title("User Login")
+user = st.sidebar.text_input("Enter your username:", placeholder="Type your name here")
 
-tab1, tab2 = st.tabs(['AI Powered To Do List', 'Handwriting Text Extraction'])
+if user:
+    st.sidebar.success(f"Logged in as {user}")
+    user_data = load_user_data(user)
 
-with tab1:
-    st.title('To Do List')
-    st.write(
-        'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
+    st.title("AI Powered To Do List")
+    st.write("This is a to-do list app that uses AI and stores tasks locally for each user.")
 
+    # Task input
     col1, col2 = st.columns(2)
 
     with col1:
-        todoinput = st.text_input('Enter a task:')
+        todoinput = st.text_input("Enter a task:")
 
     with col2:
-        date = st.date_input('Enter the deadline')
+        deadline = st.date_input("Enter the deadline", value=date.today())
 
-    if st.button('Add Task'):
-        if todoinput and todoinput not in data["tasks"]:
-            data["tasks"].append(todoinput)
-            data["dates"].append(str(date))
-            save_data(data)
+    if st.button("Add Task"):
+        if todoinput and todoinput not in user_data["tasks"]:
+            user_data["tasks"].append(todoinput)
+            user_data["dates"].append(str(deadline))
+            save_user_data(user, user_data)
             st.experimental_rerun()
 
-    def remove_task(task_index):
-        data["tasks"].pop(task_index)
-        data["dates"].pop(task_index)
-        save_data(data)
-        st.rerun()
-
-    for task_index, task in enumerate(data["tasks"]):
+    # Display tasks
+    for i, task in enumerate(user_data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
 
         with col1:
             st.write(task)
-
         with col3:
-            st.write(data["dates"][task_index])
+            st.write(user_data["dates"][i])
 
         with col2:
-            if st.button('Remove', key='Remove' + str(task_index)):
-                remove_task(task_index)
-
-        response = model.generate_content(
-            f'Break down the following task: {task} into chunks that can be completed in sessions. '
-            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-            'However if a task is given, you must break it down. Even if it’s a repeat task, break it down.'
-        )
-        st.text_area(f'AI Task Breakdown for: {task}', response.text, height=200)
-
-with tab2:
-    st.title('Image to Text')
-    st.write('This is an AI-powered tool that extracts text from an image (including handwritten text).')
-
-    text = st.camera_input('Take a picture to scan:')
-
-    if text:
-        img = Image.open(text)
-
-        responses = model.generate_content(contents=["What text is written in the image?", img])
-        st.write(responses.text)
+            if st.button("Remove", key=f"remove_{i}"):
+                user_data["tasks"].pop(i)
+                user_data["dates"].pop(i)
+                save_user_data(user, user_data)
+                st.experimental_rerun()
+else:
+    st.warning("Please enter your username to access your tasks.")
 
 
 
