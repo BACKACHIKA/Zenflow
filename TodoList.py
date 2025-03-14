@@ -54,7 +54,7 @@ with tab1:
         data["tasks"].pop(task_index)
         data["dates"].pop(task_index)
         save_data(data)
-        st.experimental_rerun()
+        st.rerun()
 
     for task_index, task in enumerate(data["tasks"]):
         col1, col2, col3 = st.columns([2, 1, 1])
