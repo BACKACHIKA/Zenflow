@@ -41,7 +41,7 @@ with tab1:
         deadline = st.date_input("Enter the deadline", value=date.today())
 
     if st.button("Add Task"):
-        if todoinput and todoinput not in user_data["tasks"]:
+        
             user_data["tasks"].append(todoinput)
             user_data["dates"].append(str(deadline))
             save_user_data(username, user_data)
