@@ -12,9 +12,9 @@ file_name = f"tasks_data_{user}.json"
     
 if os.path.exists(file_name):
     with open(file_name, "r") as file:
-        user_data=json.load(file)
+        userdata=json.load(file)
 else:
-    user_data={"tasks": [], "dates": []}
+    userdata={"tasks": [], "dates": []}
 
 
 
@@ -39,10 +39,10 @@ with tab1:
 
     if st.button("Add Task"):
         
-        user_data["tasks"].append(todoinput)
-        user_data["dates"].append(str(deadline))
+        userdata["tasks"].append(todoinput)
+        userdata["dates"].append(str(deadline))
         with open(user, "w") as file:
-             json.dump(data, user)
+             json.dump(userdata, user)
 
         
             
