@@ -8,6 +8,8 @@ import shortuuid
 
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
+genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
