@@ -52,7 +52,7 @@ with tab1:
             'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
             'However if a task is given,you must break it down.Like you need to.Even if its a repeat task,you need to.No matter what break down the task.Don\'t repeat the prompt in your response ever.'
         )
-        st.text_area(f'AI Task Breakdown for: userdata["tasks"][i]', response.text, height=200)
+        st.text_area(f'AI Task Breakdown:', response.text, height=200)
         with col2:
             if st.button("Remove", key=f"remove_{i}"):
                 userdata["tasks"].pop(i)
