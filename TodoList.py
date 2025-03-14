@@ -16,7 +16,7 @@ def load_user_data(user):
 
 
 def save_user_data(user, data):
-    file_name = shortuuid.shortuuid()}.json
+    file_name = "shortuuid.shortuuid()}.json"
     with open(file_name, "w") as file:
         json.dump(data, file)
 
