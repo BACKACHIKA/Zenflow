@@ -54,7 +54,7 @@ with tab1:
                 st.experimental_rerun()
 
 with tab2:
- st.title('Image to Text')
+    st.title('Image to Text')
     st.write('This is an AI-powered tool that extracts text from an image (including handwritten text).')
 
     text = st.camera_input('Take a picture to scan:')
