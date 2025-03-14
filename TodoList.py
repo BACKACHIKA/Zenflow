@@ -5,14 +5,13 @@ from datetime import date
 from PIL import Image
 import shortuuid
 
-# Title
+
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
 
-# Tabs
+
 tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
 
-# User data initialization
 if os.path.exists(user):
     with open(user, "r") as file:
         userdata = json.load(file)
@@ -22,19 +21,18 @@ else:
 with tab1:
     st.subheader("To-Do List")
 
-    # Task input section
     col1, col2 = st.columns(2)
     with col1:
         todoinput = st.text_input("Enter a task:")
     with col2:
         deadline = st.date_input("Enter the deadline")
 
-    # Add Task button
+
     if st.button("Add Task"):
         
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
-        st.write('Hi')
+            st.write('Hi')
             with open(user, "w") as file:
                 json.dump(userdata, file)
             st.rerun() 
