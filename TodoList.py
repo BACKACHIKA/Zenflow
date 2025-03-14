@@ -34,6 +34,7 @@ with tab1:
         
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
+            st.write(userdata)
 
           
  
