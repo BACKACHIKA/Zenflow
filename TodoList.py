@@ -13,7 +13,7 @@ if os.path.exists(file_name):
     with open(file_name, "r") as file:
         user_data=json.load(file)
 else:
-    return {"tasks": [], "dates": []}
+    user_data={"tasks": [], "dates": []}
 
 
 def save_user_data(user, data):
