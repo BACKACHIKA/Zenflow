@@ -32,8 +32,8 @@ with tab1:
 
     if st.button("Add Task"):
         
-            userdata["tasks"].append(todoinput)
-            userdata["dates"].append(str(deadline))
+            userdata=userdata["tasks"].append(todoinput)
+            userdata=userdata["dates"].append(str(deadline))
             st.write(userdata)
 
           
