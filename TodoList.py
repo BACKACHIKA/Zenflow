@@ -3,7 +3,7 @@ import json
 import os
 from datetime import date
 from PIL import Image
-from shortuuid import shortuuid
+
 
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
 def load_user_data(user):
@@ -25,7 +25,7 @@ st.write("Manage your tasks and extract text from handwritten images using this 
 
 
 
-username=shortuuid.shortuuid()
+username=shortuuid.uuid()
 with tab1: 
     user_data = load_user_data(username)
 
