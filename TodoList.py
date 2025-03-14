@@ -19,7 +19,7 @@ else:
 
 
 
-json.dump(userdata, user)
+user=json.loads(userdata)
 
 
 
