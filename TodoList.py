@@ -44,8 +44,7 @@ with tab1:
         with col1:
             st.write(userdata["tasks"][i])
             
-        with col3:
-            st.write(usabledata["tasks"][i])
+
         response = model.generate_content(
             f'Break down the following task: {userdata["tasks"][i]} into chunks that can be completed in. sessions. '
             'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
