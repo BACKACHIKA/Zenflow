@@ -3,8 +3,9 @@ import json
 import os
 from datetime import date
 from PIL import Image
+import shortuuid
 
-tab1,tab2=st.tabs('AI Powered To-Do List')
+tab1,tab2=st.tabs('AI Powered To-Do List','Handwriting Text Extraction']
 def load_user_data(user):
     file_name = f"tasks_data_{user}.json"
     if os.path.exists(file_name):
@@ -13,16 +14,16 @@ def load_user_data(user):
     else:
         return {"tasks": [], "dates": []}
 
-# Function to save user-specific data to a JSON file
+
 def save_user_data(user, data):
-    file_name = f"tasks_data_{user}.json"
+    file_name = f"tasks_data_shortuuid.shortuuid()}.json"
     with open(file_name, "w") as file:
         json.dump(data, file)
 
-st.title("AI Powered To Do List with Handwriting Text Extraction")
+st.title("AI Powered To Do List ")
 st.write("Manage your tasks and extract text from handwritten images using this app!")
 
-# User input for username
+
 username = st.text_input("Enter your username to continue:", placeholder="Type your name here")
 if username:
    with tab1: 
@@ -62,7 +63,7 @@ if username:
         task_index += 1
 
    with tab2:  
-    st.subheader("Handwriting Text Extraction")
+    st.title("Handwriting Text Extraction")
     st.write("Upload an image to extract text (including handwritten text):")
     uploaded_image = st.camera_input("Take a picture")
     if uploaded_image:
