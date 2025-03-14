@@ -48,15 +48,15 @@ with tab1:
 
              st.rerun()
 
-for i in range(len(userdata["tasks"])):
-        col1, col2, col3 = st.columns([2, 1, 1])
+        for i in range(len(userdata["tasks"])):
+         col1, col2, col3 = st.columns([2, 1, 1])
 
-        with col1:
+          with col1:
             st.write(user_data["tasks"][i])
             print(user_data["tasks"][i])(user_data["tasks"][i])
-        with col3:
+          with col3:
             st.write(user_data["dates"][i])
-        with col2:
+          with col2:
             if st.button("Remove", key=f"remove_{task_index}"):
                 user_data["tasks"].pop(task_index)
                 user_data["dates"].pop(task_index)
