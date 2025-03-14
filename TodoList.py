@@ -19,7 +19,7 @@ else:
 
 
 
-user=json.loads(userdata)
+user=json.loads(str(userdata))
 
 
 
