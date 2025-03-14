@@ -44,6 +44,13 @@ with tab1:
             st.write(userdata["tasks"][i])
         with col3:
             st.write(userdata["dates"][i])
+        response = model.generate_content(
+            f'Break down the following task: {userdata["tasks"][i]} into chunks that can be completed in. sessions. '
+            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+            'However if a task is given,you must break it down.Like you need to.Even if its a repeat task,you need to.No matter what break down the task.Don\'t repeat the prompt in your response ever.'
+        )
+        st.text_area(f'AI Task Breakdown for: userdata["tasks"][i]', response.text, height=200)
         with col2:
             if st.button("Remove", key=f"remove_{i}"):
                 userdata["tasks"].pop(i)
