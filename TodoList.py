@@ -34,7 +34,7 @@ with tab1:
         
             userdata["tasks"].append(todoinput)
             userdata["dates"].append(str(deadline))
-            st.write('Hi')
+
             with open(user, "w") as file:
                 json.dump(userdata, file)
              
