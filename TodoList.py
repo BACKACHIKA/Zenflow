@@ -5,7 +5,7 @@ from datetime import date
 from PIL import Image
 import shortuuid
 
-tab1,tab2=st.tabs('AI Powered To-Do List','Handwriting Text Extraction']
+tab1,tab2=st.tabs['AI Powered To-Do List','Handwriting Text Extraction']
 def load_user_data(user):
     file_name = f"tasks_data_{user}.json"
     if os.path.exists(file_name):
