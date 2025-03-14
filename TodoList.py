@@ -38,7 +38,7 @@ with tab1:
     with col2:
         deadline = st.date_input("Enter the deadline")
 
-    if not st.button("Add Task"):
+    if st.button("Add Task"):
         
         userdata["tasks"].append(todoinput)
         userdata["dates"].append(str(deadline))
@@ -46,7 +46,7 @@ with tab1:
              user=json.dumps(userdata)        
             
 
-             st.rerun()
+
 
         for i in range(len(userdata["tasks"])):
           col1, col2, col3 = st.columns([2, 1, 1])
