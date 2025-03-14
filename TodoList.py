@@ -38,8 +38,8 @@ with tab1:
     with col2:
         deadline = st.date_input("Enter the deadline")
 
-    if st.button("Add Task"):
-        st.write('Hi')
+    if not st.button("Add Task"):
+        
         userdata["tasks"].append(todoinput)
         userdata["dates"].append(str(deadline))
         with open(user, "w") as file:
