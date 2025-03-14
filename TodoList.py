@@ -11,8 +11,8 @@ user=f'{shortuuid.uuid()}.json'
 tab1,tab2=st.tabs(['AI Powered To-Do List','Handwriting Text Extraction'])
 file_name = f"{user}.json"
     
-if os.path.exists(file_name):
-    with open(file_name, "r") as file:
+if os.path.exists(user):
+    with open(user, "r") as file:
         userdata=json.load(file)
 else:
     userdata={"tasks": [], "dates": []}
