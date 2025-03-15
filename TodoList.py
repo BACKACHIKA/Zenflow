@@ -41,7 +41,7 @@ with tab1:
                     json.dump(userdata, file)
                 
     userdata=json.dumps(user)
-    userdata=json.loads(userdata)
+
     st.write(userdata)
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
