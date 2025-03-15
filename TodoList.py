@@ -8,11 +8,12 @@ import google.generativeai as genai
 
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
-genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")
+genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")  # Replace with your actual API key
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
 
+# Load userdata from file or initialize empty
 if os.path.exists(user):
     with open(user, "r") as file:
         try:
@@ -25,41 +26,38 @@ else:
 with tab1:
     st.subheader("To-Do List")
 
-    todoinput = st.text_input("Enter a task:")
-    deadline = st.date_input("Enter the deadline")
+    col1, col2 = st.columns(2)
+    with col1:
+        todoinput = st.text_input("Enter a task:")
+    with col2:
+        deadline = st.date_input("Enter the deadline")
 
     if st.button("Add Task"):
-        user = json.dumps(userdata)
-        userdata = json.loads(user)
-
-        task = todoinput
-        userdata["tasks"].append({"task": task, "deadline": str(deadline)})
-        with open(user, "w") as file:
-            json.dump(userdata, file)
-        
-
-    user = json.dumps(userdata)
-    userdata = json.loads(user)
+        if todoinput:
+            task = todoinput.strip()
+            if task:
+                userdata["tasks"].append({"task": task, "deadline": str(deadline)})
+                with open(user, "w") as file:
+                    json.dump(userdata, file)
+                st.rerun()
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
-
+        
         if 'responses' not in st.session_state:
             st.session_state.responses = {}
 
         if task_data['task'] not in st.session_state.responses:
-            
-                response = model.generate_content(
-                    f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
-                    'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-                    'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-                    'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
-                )
-                st.session_state.responses[task_data['task']] = response.text
-            
+            response = model.generate_content(
+                prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
+                       'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+                       'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+                       'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
+            )
+            st.session_state.responses[task_data['task']] = response.text
 
         st.text_area(f'AI Task Breakdown:', st.session_state.responses[task_data['task']], height=200)
 
@@ -79,10 +77,6 @@ with tab2:
     text = st.camera_input('Take a picture to scan:')
 
     if text:
-            img = Image.open(text)
-
-
-            responses = model.generate_content(contents=["What text is written in the image?", img])
-            st.write(responses.text)
-        
-            st.error("API quota exceeded. Please try again later or increase your quota.")
+        img = Image.open(text)
+        responses = model.generate_content(contents=["What text is written in the image?", img])
+        st.write(responses.text)
