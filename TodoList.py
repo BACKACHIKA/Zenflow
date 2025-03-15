@@ -40,7 +40,7 @@ with tab1:
                 with open(user, "w") as file:
                     json.dump(userdata, file)
                 
-    userdata=json.dumps(user)
+    user=json.dumps(userdata)
     userdata=json.loads(user)
 
 
