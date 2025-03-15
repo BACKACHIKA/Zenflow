@@ -36,7 +36,7 @@ with tab1:
           user=json.dumps(userdata)
           userdata=json.loads(user)
         
-            
+          task=todoinput  
           userdata["tasks"].append({"task": task, "deadline": str(deadline)})
           with open(user, "w") as file:
                     json.dump(userdata, file)
