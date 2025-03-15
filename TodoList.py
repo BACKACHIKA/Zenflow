@@ -51,7 +51,7 @@ with tab1:
             st.session_state.responses = {}
 
         if task_data['task'] not in st.session_state.responses:
-            try:
+            
                 response = model.generate_content(
                     f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
                            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
@@ -59,11 +59,8 @@ with tab1:
                            'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
                 )
                 st.session_state.responses[task_data['task']] = response.text
-                # Add a delay to prevent too many requests at once
-                time.sleep(1)
-            except ResourceExhausted:
-                st.error("API quota exceeded. Please try again later or increase your quota.")
-                break
+       
+            
 
         st.text_area(f'AI Task Breakdown:', st.session_state.responses[task_data['task']], height=200)
 
@@ -82,11 +79,10 @@ with tab2:
     text = st.camera_input('Take a picture to scan:')
 
     if text:
-        img = Image.open(text)
-        try:
+            img = Image.open(text)
+
             responses = model.generate_content(contents=["What text is written in the image?", img])
             st.write(responses.text)
-            # Add a delay to prevent too many requests at once
-            time.sleep(1)
-        except ResourceExhausted:
+      
+     
             st.error("API quota exceeded. Please try again later or increase your quota.")
