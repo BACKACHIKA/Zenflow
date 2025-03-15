@@ -37,13 +37,13 @@ with tab1:
             for task in tasks:
                 task = task.strip()
                 if task:
-                       userdata["tasks"].append({"task": task,  deadline": str(deadline)})
+                       userdata["tasks"].append({"task": task,  "deadline": str(deadline)})
 
 with open(user, "w") as file:
                 json.dump(userdata, file)
             st.rerun()
 
-    for i, task_data in enumerate(userdata["tasks"]):
+    for i, task_data in userdata["tasks"]:
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
