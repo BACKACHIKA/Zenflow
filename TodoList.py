@@ -73,6 +73,6 @@ with tab2:
 
     if text:
         img = Image.open(text)
-        try:
-            responses = model.generate_content(contents=["What text is written in the image?", img])
-            st.write(responses.text)
+        
+        responses = model.generate_content(contents=["What text is written in the image?", img])
+        st.write(responses.text)
