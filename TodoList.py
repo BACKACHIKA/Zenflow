@@ -37,30 +37,32 @@ with tab1:
             for task in tasks:
                 task = task.strip()
                 if task:
-                       userdata["tasks"].append({"task": task,  "deadline": str(deadline)})
+                    userdata["tasks"].append({"task": task, "deadline": str(deadline)})
 
-with open(user, "w") as file:
+            with open(user, "w") as file:
                 json.dump(userdata, file)
-                st.rerun()
+            st.experimental_rerun()
 
-    for i, task_data in userdata["tasks"]:
+    for i in range(len(userdata["tasks"])):
+        task_data = userdata["tasks"][i]
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
-
+        
         response = model.generate_content(
-            f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
-            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-            'However if a task is given,you must break it down.Like you need to.Even if its a repeat task,you need to.No matter what break down the task.Don\'t repeat the prompt in your response ever.'
+            prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
+                   'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+                   'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+                   'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
         )
         st.text_area(f'AI Task Breakdown:', response.text, height=200)
+        
         with col2:
             if st.button("Remove", key=f"remove_{i}"):
                 userdata["tasks"].pop(i)
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.rerun()
+                st.experimental_rerun()
 
 with tab2:
     st.title('Image to Text')
@@ -70,6 +72,5 @@ with tab2:
 
     if text:
         img = Image.open(text)
-
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
