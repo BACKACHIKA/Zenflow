@@ -27,21 +27,19 @@ with tab1:
 
     col1, col2 = st.columns(2)
     with col1:
-        todoinput = st.text_area("Enter tasks (one per line):", height=150)
+        todoinput = st.text_input("Enter a task:")
     with col2:
         deadline = st.date_input("Enter the deadline")
 
-    if st.button("Add Tasks"):
+    if st.button("Add Task"):
         if todoinput:
-            tasks = todoinput.split("\n")
-            for task in tasks:
-                task = task.strip()
-                if task:
-                    userdata["tasks"].append({"task": task, "deadline": str(deadline)})
+            task = todoinput.strip()
+            if task:
+                userdata["tasks"].append({"task": task, "deadline": str(deadline)})
 
-            with open(user, "w") as file:
-                json.dump(userdata, file)
-            st.experimental_rerun()
+                with open(user, "w") as file:
+                    json.dump(userdata, file)
+                st.rerun()
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
@@ -62,7 +60,7 @@ with tab1:
                 userdata["tasks"].pop(i)
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.experimental_rerun()
+                st.rerun()
 
 with tab2:
     st.title('Image to Text')
