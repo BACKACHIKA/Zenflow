@@ -33,11 +33,12 @@ with tab1:
         deadline = st.date_input("Enter the deadline")
 
     if st.button("Add Task"):
+          user=json.dumps(userdata)
+          userdata=json.loads(user)
         
-            task = todoinput.strip()
-            if task:
-                userdata["tasks"].append({"task": task, "deadline": str(deadline)})
-                with open(user, "w") as file:
+            
+          userdata["tasks"].append({"task": task, "deadline": str(deadline)})
+          with open(user, "w") as file:
                     json.dump(userdata, file)
                 
     user=json.dumps(userdata)
