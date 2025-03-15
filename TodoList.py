@@ -4,7 +4,7 @@ import shortuuid
 from PIL import Image
 
 
-genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
+genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
