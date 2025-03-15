@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import time
 from datetime import date
 from PIL import Image
 import shortuuid
@@ -39,7 +40,7 @@ with tab1:
                 userdata["tasks"].append({"task": task, "deadline": str(deadline)})
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                
+                st.rerun()
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
@@ -49,12 +50,14 @@ with tab1:
         
         try:
             response = model.generate_content(
-                f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
+                prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
                        'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
                        'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
                        'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
             )
             st.text_area(f'AI Task Breakdown:', response.text, height=200)
+            # Add a delay to prevent too many requests at once
+            time.sleep(1)
         except ResourceExhausted:
             st.error("API quota exceeded. Please try again later or increase your quota.")
 
@@ -73,6 +76,10 @@ with tab2:
 
     if text:
         img = Image.open(text)
-        
-        responses = model.generate_content(contents=["What text is written in the image?", img])
-        st.write(responses.text)
+        try:
+            responses = model.generate_content(contents=["What text is written in the image?", img])
+            st.write(responses.text)
+            # Add a delay to prevent too many requests at once
+            time.sleep(1)
+        except ResourceExhausted:
+            st.error("API quota exceeded. Please try again later or increase your quota.")
