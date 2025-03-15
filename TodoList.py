@@ -39,7 +39,7 @@ with tab1:
 
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                
+                st.rerun()
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
@@ -48,7 +48,7 @@ with tab1:
             st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
         
         response = model.generate_content(
-            f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
+            prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
                    'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
                    'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
                    'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
