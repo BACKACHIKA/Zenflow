@@ -41,7 +41,7 @@ with tab1:
 
 with open(user, "w") as file:
                 json.dump(userdata, file)
-            st.rerun()
+                st.rerun()
 
     for i, task_data in userdata["tasks"]:
         col1, col2, col3 = st.columns([2, 1, 1])
