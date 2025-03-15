@@ -1,76 +1,73 @@
 import streamlit as st
-import json
-import os
-from datetime import date
-from PIL import Image
-import shortuuid
 import google.generativeai as genai
+import shortuuid
+from PIL import Image
 
-st.title("AI Powered To-Do List")
-user = "userdata.json"
-genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")  # Replace with your actual API key
+
+genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
 
-# Load userdata from file or initialize empty
-if os.path.exists(user):
-    with open(user, "r") as file:
-        try:
-            userdata = json.load(file)
-        except json.JSONDecodeError:
-            userdata = {"tasks": []}
-else:
-    userdata = {"tasks": []}
+tab1, tab2= st.tabs(['AI Powered To Do list','Handwriting Text Extraction'])
+
 
 with tab1:
-    st.subheader("To-Do List")
+    st.title('To Do List')
+    st.write(
+        'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
+
+    if 'tasks' not in st.session_state:
+        st.session_state.tasks = []
+    if 'dates' not in st.session_state:
+        st.session_state.dates = []
 
     col1, col2 = st.columns(2)
+
     with col1:
-        todoinput = st.text_input("Enter a task:")
+        todoinput = st.text_input('Enter a task:')
+
     with col2:
-        deadline = st.date_input("Enter the deadline")
+        date = st.date_input('Enter the deadline')
 
-    if st.button("Add Task"):
-        if todoinput:
-            task = todoinput.strip()
-            if task:
-                userdata["tasks"].append({"task": task, "deadline": str(deadline)})
-                with open(user, "w") as file:
-                    json.dump(userdata, file)
-                st.session_state.tasks = userdata["tasks"]  # Update session state without rerun
-                st.rerun()  # To refresh the UI
+    if st.button('Add Task'):
+        if todoinput and todoinput not in st.session_state.tasks:
+            st.session_state.tasks.append(todoinput)
+            st.session_state.dates.append(date)
+            st.rerun()
 
-    for i in range(len(userdata["tasks"])):
-        task_data = userdata["tasks"][i]
+
+    def remove_task(task_name,dates):
+            
+            st.session_state.tasks.pop(task_name)
+            st.session_state.dates.pop(dates)
+            st.rerun()
+
+
+
+    for task in range(len(st.session_state.tasks)):
+
+
         col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
-        
-        if 'responses' not in st.session_state:
-            st.session_state.responses = {}
-
-        if task_data['task'] not in st.session_state.responses:
-            response = model.generate_content(
-                prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
-                       'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-                       'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-                       'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
-            )
-            st.session_state.responses[task_data['task']] = response.text
-
-        st.text_area(f'AI Task Breakdown:', st.session_state.responses[task_data['task']], height=200)
 
         with col2:
-            if st.button("Remove", key=f"remove_{i}"):
-                userdata["tasks"].pop(i)
-                if task_data['task'] in st.session_state.responses:
-                    del st.session_state.responses[task_data['task']]
-                with open(user, "w") as file:
-                    json.dump(userdata, file)
-                st.session_state.tasks = userdata["tasks"]  # Update session state without rerun
-                st.rerun()  # To refresh the UI
+            if st.button('Remove', key='Remove'+str(task)):
+                remove_task(task,task)
+
+        with col1:
+            st.write(st.session_state.tasks[task])
+        with col3:
+            st.write(st.session_state.dates[task])
+
+
+
+
+        response = model.generate_content(
+            f'Break down the following task: {st.session_state.tasks[task]} into chunks that can be completed in. sessions. '
+            'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+            'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+            'However if a task is given,you must break it down.Like you need to.Even if its a repeat task,you need to.No matter what break down the task.'
+        )
+        st.text_area(f'AI Task Breakdown for: {st.session_state.tasks[task]}', response.text, height=200)
 
 with tab2:
     st.title('Image to Text')
@@ -80,5 +77,6 @@ with tab2:
 
     if text:
         img = Image.open(text)
+
         responses = model.generate_content(contents=["What text is written in the image?", img])
         st.write(responses.text)
