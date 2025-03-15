@@ -1,4 +1,4 @@
-import streamlit as st
+limport streamlit as st
 import json
 import os
 from datetime import date
@@ -9,7 +9,7 @@ from google.api_core.exceptions import ResourceExhausted
 
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
-genai.configure(api_key="YOUR_API_KEY")  # Replace with your actual API key
+genai.configure(api_key="AIzaSyBEnO9-HQgK4dVACYvYmJCJ58L_kh4lJ1I" # Replace with your actual API key
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 tab1, tab2 = st.tabs(['AI Powered To-Do List', 'Handwriting Text Extraction'])
