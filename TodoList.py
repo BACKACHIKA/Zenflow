@@ -7,7 +7,7 @@ import shortuuid
 import google.generativeai as genai
 
 st.title("AI Powered To-Do List")
-user = f'{shortuuid.uuid()}.json'
+user = "userdata.json"
 genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")  # Replace with your actual API key
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -39,7 +39,8 @@ with tab1:
                 userdata["tasks"].append({"task": task, "deadline": str(deadline)})
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.rerun()
+                st.session_state.tasks = userdata["tasks"]  # Update session state without rerun
+                st.rerun()  # To refresh the UI
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
@@ -68,7 +69,8 @@ with tab1:
                     del st.session_state.responses[task_data['task']]
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.rerun()
+                st.session_state.tasks = userdata["tasks"]  # Update session state without rerun
+                st.rerun()  # To refresh the UI
 
 with tab2:
     st.title('Image to Text')
