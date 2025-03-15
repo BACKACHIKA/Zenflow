@@ -33,7 +33,7 @@ with tab1:
         deadline = st.date_input("Enter the deadline")
 
     if st.button("Add Task"):
-        if todoinput:
+        
             task = todoinput.strip()
             if task:
                 userdata["tasks"].append({"task": task, "deadline": str(deadline)})
@@ -41,8 +41,9 @@ with tab1:
                     json.dump(userdata, file)
                 
     userdata=json.dumps(user)
+    userdata=json.loads(user)
 
-    st.write(dict(userdata))
+
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
         col1, col2, col3 = st.columns([2, 1, 1])
