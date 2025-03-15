@@ -37,8 +37,9 @@ with tab1:
             for task in tasks:
                 task = task.strip()
                 if task:
-                    userdata["tasks"].append({"task": task, "deadline": str(deadline)})
-            with open(user, "w") as file:
+                       userdata["tasks"].append({"task": task,  deadline": str(deadline)})
+
+with open(user, "w") as file:
                 json.dump(userdata, file)
             st.rerun()
 
