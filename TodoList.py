@@ -39,7 +39,7 @@ with tab1:
 
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                st.rerun()
+                
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
