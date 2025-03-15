@@ -41,7 +41,7 @@ with tab1:
                     json.dump(userdata, file)
                 
     userdata=json.dumps(user)
-    for i in range(len(userdata["tasks"])):
+    for i in range(len(dict(userdata)["tasks"])):
         task_data = userdata["tasks"][i]
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
