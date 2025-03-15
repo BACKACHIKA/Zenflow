@@ -5,6 +5,7 @@ from datetime import date
 from PIL import Image
 import shortuuid
 import google.generativeai as genai
+from google.api_core.exceptions import ResourceExhausted
 
 st.title("AI Powered To-Do List")
 user = f'{shortuuid.uuid()}.json'
@@ -36,10 +37,9 @@ with tab1:
             task = todoinput.strip()
             if task:
                 userdata["tasks"].append({"task": task, "deadline": str(deadline)})
-
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                
+                st.rerun()
 
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
@@ -47,20 +47,23 @@ with tab1:
         with col1:
             st.write(f"{task_data['task']} (Deadline: {task_data['deadline']})")
         
-        response = model.generate_content(
-            contents=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
-                   'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
-                   'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
-                   'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
-        )
-        st.text_area(f'AI Task Breakdown:', response.text, height=200)
-        
+        try:
+            response = model.generate_content(
+                prompt=f'Break down the following task: {task_data["task"]} into chunks that can be completed in sessions. '
+                       'Split it into stages, so Stage 1: Do this, Stage 2: Do this, and so on for 10 stages. '
+                       'Each stage must have max. 20 words. Keep it all the same font. Add a new line before every stage. '
+                       'However, if a task is given, you must break it down. Like you need to. Even if it is a repeat task, you need to. No matter what, break down the task. Don\'t repeat the prompt in your response exactly.'
+            )
+            st.text_area(f'AI Task Breakdown:', response.text, height=200)
+        except ResourceExhausted:
+            st.error("API quota exceeded. Please try again later or increase your quota.")
+
         with col2:
             if st.button("Remove", key=f"remove_{i}"):
                 userdata["tasks"].pop(i)
                 with open(user, "w") as file:
                     json.dump(userdata, file)
-                
+                st.rerun()
 
 with tab2:
     st.title('Image to Text')
@@ -70,5 +73,6 @@ with tab2:
 
     if text:
         img = Image.open(text)
-        responses = model.generate_content(contents=["What text is written in the image?", img])
-        st.write(responses.text)
+        try:
+            responses = model.generate_content(contents=["What text is written in the image?", img])
+            st.write(responses.text)
