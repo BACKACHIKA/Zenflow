@@ -33,7 +33,7 @@ with tab1:
         if todoinput and todoinput not in st.session_state.tasks:
             st.session_state.tasks.append(todoinput)
             st.session_state.dates.append(date)
-            st.rerun()
+            
 
 
     def remove_task(task_name,dates):
