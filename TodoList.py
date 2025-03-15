@@ -38,13 +38,14 @@ with tab1:
         
           task=todoinput  
           userdata["tasks"].append({"task": task, "deadline": str(deadline)})
+          st.write(str(userdata["tasks"]))
           with open(user, "w") as file:
                     json.dump(userdata, file)
                 
     user=json.dumps(userdata)
     userdata=json.loads(user)
 
-    st.write(str(userdata["tasks"]))
+    
     for i in range(len(userdata["tasks"])):
         task_data = userdata["tasks"][i]
         col1, col2, col3 = st.columns([2, 1, 1])
