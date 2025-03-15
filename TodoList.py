@@ -37,7 +37,7 @@ with tab1:
         userdata["tasks"].append({"task": task, "deadline": str(deadline)})
         with open(user, "w") as file:
             json.dump(userdata, file)
-        st.rerun()
+        
 
     user = json.dumps(userdata)
     userdata = json.loads(user)
