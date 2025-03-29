@@ -3,24 +3,25 @@ import google.generativeai as genai
 import json
 from PIL import Image
 import os
+import uuid
 
 genai.configure(api_key="AIzaSyCjwfeub06TqcY2D5rgUiKwaX57BXywo5E")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Function to save tasks to JSON
-def save_tasks(tasks, dates):
+def save_tasks(tasks, dates, session_id):
     data = {"tasks": tasks, "dates": [date.isoformat() for date in dates]}
     try:
-        with open("tasks.json", "w") as f:
+        with open(f"tasks_{session_id}.json", "w") as f:
             json.dump(data, f)
     except Exception as e:
         st.error(f"Error saving tasks: {e}")
 
 # Function to load tasks from JSON
-def load_tasks():
-    if os.path.exists("tasks.json"):
+def load_tasks(session_id):
+    if os.path.exists(f"tasks_{session_id}.json"):
         try:
-            with open("tasks.json", "r") as f:
+            with open(f"tasks_{session_id}.json", "r") as f:
                 data = json.load(f)
                 return data["tasks"], [st.session_state.get_date(date_str) for date_str in data["dates"]]
         except Exception as e:
@@ -38,6 +39,12 @@ def get_date(date_str):
 if 'get_date' not in st.session_state:
     st.session_state.get_date = get_date
 
+# Generate a unique session ID for each user
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
+session_id = st.session_state.session_id
+
 tab1, tab2 = st.tabs(['AI Powered To Do list', 'Handwriting Text Extraction'])
 
 with tab1:
@@ -46,7 +53,7 @@ with tab1:
         'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
 
     if 'tasks' not in st.session_state:
-        st.session_state.tasks, st.session_state.dates = load_tasks()
+        st.session_state.tasks, st.session_state.dates = load_tasks(session_id)
 
     col1, col2 = st.columns(2)
 
@@ -60,13 +67,13 @@ with tab1:
         if todoinput and todoinput not in st.session_state.tasks:
             st.session_state.tasks.append(todoinput)
             st.session_state.dates.append(date)
-            save_tasks(st.session_state.tasks, st.session_state.dates)
+            save_tasks(st.session_state.tasks, st.session_state.dates, session_id)
             # st.rerun() #removed st.rerun()
 
     def remove_task(task_index):
         st.session_state.tasks.pop(task_index)
         st.session_state.dates.pop(task_index)
-        save_tasks(st.session_state.tasks, st.session_state.dates)
+        save_tasks(st.session_state.tasks, st.session_state.dates, session_id)
         st.rerun()
 
     for task_index in range(len(st.session_state.tasks)):
