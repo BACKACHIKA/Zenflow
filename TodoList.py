@@ -45,7 +45,7 @@ if 'session_id' not in st.session_state:
 
 session_id = st.session_state.session_id
 
-tab1, tab2 = st.tabs(['AI Powered To Do list'])
+tab1 = st.tabs(['AI Powered To Do list'])
 
 with tab1:
     st.title('To Do List')
