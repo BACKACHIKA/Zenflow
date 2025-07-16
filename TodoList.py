@@ -96,14 +96,3 @@ with tab1:
         )
         st.text_area(f'AI Task Breakdown for: {st.session_state.tasks[task_index]}', response.text, height=200)
 
-with tab2:
-    st.title('Image to Text')
-    st.write('This is an AI-powered tool that extracts text from an image (including handwritten text).')
-
-    text = st.camera_input('Take a picture to scan:')
-
-    if text:
-        img = Image.open(text)
-
-        responses = model.generate_content(contents=["What text is written in the image?", img])
-        st.write(responses.text)
