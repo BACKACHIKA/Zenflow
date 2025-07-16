@@ -45,9 +45,8 @@ if 'session_id' not in st.session_state:
 
 session_id = st.session_state.session_id
 
-tab1 = st.tabs(['AI Powered To Do list'])
 
-with tab1:
+if True:
     st.title('To Do List')
     st.write(
         'This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.')
