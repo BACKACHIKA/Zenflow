@@ -1,2 +1,2 @@
 import streamlit
-st.html('index.html', *, width="stretch")
+st.html('index.html', width="stretch")
