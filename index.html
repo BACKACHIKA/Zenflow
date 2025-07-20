@@ -1,0 +1,897 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Task Breakdown App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Using local Gemma model - no API key needed
+    </script>
+    <style>
+        .btn-blue-outline {
+            border: 1px solid #3b82f6;
+            background-color: #374151;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .btn-blue-outline:hover {
+            background-color: #4b5563;
+            border-color: #60a5fa;
+        }
+        .btn-blue-outline:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1f2937;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .scrollable-breakdown {
+            max-height: 192px;
+            overflow-y: auto;
+        }
+        .scrollable-breakdown::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable-breakdown::-webkit-scrollbar-track {
+            background: #374151;
+            border-radius: 3px;
+        }
+        .scrollable-breakdown::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 3px;
+        }
+        .completed-subtask {
+            text-decoration: line-through;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        .completed-task {
+            text-decoration: line-through;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        /* Custom checkbox styling */
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6b7280;
+            border-radius: 4px;
+            background-color: #374151;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox:hover {
+            border-color: #3b82f6;
+            background-color: #4b5563;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            animation: checkmark 0.3s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Subtask checkbox styling */
+        .subtask-checkbox {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #6b7280;
+            border-radius: 3px;
+            background-color: #4b5563;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subtask-checkbox:hover {
+            border-color: #60a5fa;
+            background-color: #5b6b7c;
+        }
+
+        .subtask-checkbox:checked {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+
+        .subtask-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            animation: checkmark 0.3s ease-in-out;
+        }
+
+        /* Task fade-out animation */
+        .task-fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        /* Task item hover effects */
+        .task-item {
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .task-item:hover {
+            background-color: #3a3f4b;
+            border-color: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Task list scrollbar styling */
+        .max-h-96::-webkit-scrollbar {
+            width: 8px;
+        }
+        .max-h-96::-webkit-scrollbar-track {
+            background: #374151;
+            border-radius: 4px;
+        }
+        .max-h-96::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 4px;
+        }
+        .max-h-96::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-white">
+<div class="container mx-auto px-6 py-8 max-w-4xl">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-white mb-4">To Do List</h1>
+        <p class="text-gray-300 text-lg">
+            This is a to-do list app that uses AI to break down your tasks into simple, manageable sub-tasks.
+        </p>
+    </div>
+
+    <!-- Add Task Form -->
+    <div class="mb-8 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-300 mb-2">Enter a task:</label>
+                <input id="taskInput" type="text" placeholder="Enter your task here..." class="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-2">Enter the deadline</label>
+                <input id="deadlineInput" type="date" class="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+        <button id="addTaskBtn" class="btn-blue-outline">
+            Add Task
+        </button>
+    </div>
+
+    <!-- Task List -->
+    <div class="max-h-96 overflow-y-auto pr-2">
+        <div id="taskList" class="space-y-6"></div>
+    </div>
+</div>
+
+<script>
+    // Global state
+    let tasks = [];
+    let loadingTaskIds = new Set();
+
+    // localStorage functions
+    function saveTasksToStorage() {
+        try {
+            localStorage.setItem('todoTasks', JSON.stringify(tasks));
+            console.log('Saved', tasks.length, 'tasks to localStorage');
+        } catch (error) {
+            console.error('Failed to save tasks to localStorage:', error);
+        }
+    }
+
+    function loadTasksFromStorage() {
+        try {
+            const savedTasks = localStorage.getItem('todoTasks');
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+                // Convert date strings back to Date objects
+                tasks.forEach(task => {
+                    if (task.createdAt) {
+                        task.createdAt = new Date(task.createdAt);
+                    }
+                    // Initialize completedSubtasks if not present
+                    if (task.breakdown && !task.completedSubtasks) {
+                        task.completedSubtasks = new Array(task.breakdown.length).fill(false);
+                    }
+                });
+                console.log('Loaded', tasks.length, 'tasks from localStorage');
+            } else {
+                console.log('No saved tasks found in localStorage');
+            }
+        } catch (error) {
+            console.error('Failed to load tasks from localStorage:', error);
+            tasks = [];
+        }
+    }
+
+    // Utility functions
+    function generateId() {
+        return Math.random().toString(36).substr(2, 9);
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${day}/${month}`;
+    }
+
+    function showToast(title, description, variant = 'default') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="font-semibold">${title}</div>
+            <div class="text-sm text-gray-300">${description}</div>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Task completion functions with animation
+    function toggleTaskWithAnimation(taskId) {
+        const taskElement = document.querySelector(`input[onchange*="${taskId}"]`).closest('.space-y-4');
+        const taskList = document.getElementById('taskList');
+        const scrollPosition = taskList.scrollTop;
+
+        tasks = tasks.map(task => {
+            if (task.id === taskId) {
+                task.completed = !task.completed;
+
+                if (task.completed) {
+                    // Add fade-out animation before removing
+                    taskElement.classList.add('task-fade-out');
+                    setTimeout(() => {
+                        saveTasksToStorage();
+                        renderTasks();
+                        // Restore scroll position after rendering
+                        setTimeout(() => {
+                            taskList.scrollTop = scrollPosition;
+                        }, 50);
+                    }, 500);
+                } else {
+                    saveTasksToStorage();
+                    renderTasks();
+                    // Restore scroll position after rendering
+                    setTimeout(() => {
+                        taskList.scrollTop = scrollPosition;
+                    }, 50);
+                }
+            }
+            return task;
+        });
+
+        if (!tasks.find(t => t.id === taskId).completed) {
+            saveTasksToStorage();
+            renderTasks();
+            // Restore scroll position after rendering
+            setTimeout(() => {
+                taskList.scrollTop = scrollPosition;
+            }, 50);
+        }
+    }
+
+    // Legacy function for compatibility
+    function toggleTask(taskId) {
+        toggleTaskWithAnimation(taskId);
+    }
+
+    // Check if all subtasks are completed
+    function areAllSubtasksCompleted(task) {
+        if (!task.breakdown || !task.completedSubtasks) {
+            return false;
+        }
+        return task.completedSubtasks.every(completed => completed);
+    }
+
+    // Subtask completion functions with animation
+    function toggleSubtaskWithAnimation(taskId, subtaskIndex) {
+        const taskList = document.getElementById('taskList');
+        const mainScrollPosition = taskList.scrollTop;
+
+        // Also preserve subtask container scroll position
+        const subtaskContainer = document.querySelector(`[data-task-id="${taskId}"] .scrollable-breakdown`);
+        const subtaskScrollPosition = subtaskContainer ? subtaskContainer.scrollTop : 0;
+
+        tasks = tasks.map(task => {
+            if (task.id === taskId) {
+                if (!task.completedSubtasks) {
+                    task.completedSubtasks = new Array(task.breakdown.length).fill(false);
+                }
+                task.completedSubtasks[subtaskIndex] = !task.completedSubtasks[subtaskIndex];
+
+                // Check if all subtasks are now completed
+                if (task.completedSubtasks.every(completed => completed)) {
+                    task.completed = true;
+                }
+            }
+            return task;
+        });
+
+        saveTasksToStorage();
+        renderTasks();
+
+        // Restore both scroll positions
+        requestAnimationFrame(() => {
+            taskList.scrollTop = mainScrollPosition;
+            const newSubtaskContainer = document.querySelector(`[data-task-id="${taskId}"] .scrollable-breakdown`);
+            if (newSubtaskContainer) {
+                newSubtaskContainer.scrollTop = subtaskScrollPosition;
+            }
+        });
+    }
+
+    // Legacy function for compatibility
+    function toggleSubtask(taskId, subtaskIndex) {
+        toggleSubtaskWithAnimation(taskId, subtaskIndex);
+    }
+
+    // Gemini API time estimation function
+    async function estimateTaskTime(taskTitle) {
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `Estimate how many minutes it would take an average person to complete this task: "${taskTitle}".
+
+                            Respond with only a number (the estimated minutes). Consider:
+                            - Task complexity and scope
+                            - Typical completion time for similar tasks
+                            - Average skill level and efficiency
+
+                            Examples:
+                            - "Send an email" = 5
+                            - "Write a report" = 120
+                            - "Clean the kitchen" = 45
+                            - "Read a chapter" = 30`
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const estimatedTime = parseInt(data.candidates[0].content.parts[0].text.trim());
+
+            // Fallback if parsing fails
+            if (isNaN(estimatedTime) || estimatedTime <= 0) {
+                return fallbackEstimateTaskTime(taskTitle);
+            }
+
+            return Math.min(Math.max(estimatedTime, 2), 480); // Clamp between 2 minutes and 8 hours
+        } catch (error) {
+            console.error('Gemini API error for task estimation:', error);
+            return fallbackEstimateTaskTime(taskTitle);
+        }
+    }
+
+    // Gemini API subtask time estimation function
+    async function estimateSubtaskTime(subtaskTitle, totalTaskTime) {
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `Estimate how many minutes this subtask would take: "${subtaskTitle}".
+
+                            Context: This is part of a larger task that takes approximately ${totalTaskTime} minutes total.
+
+                            Respond with only a number (the estimated minutes). Consider this is a single step in a larger process.
+
+                            Examples:
+                            - "Gather ingredients" = 5
+                            - "Preheat oven" = 3
+                            - "Mix ingredients" = 10
+                            - "Monitor progress" = 15`
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const estimatedTime = parseInt(data.candidates[0].content.parts[0].text.trim());
+
+            // Fallback if parsing fails
+            if (isNaN(estimatedTime) || estimatedTime <= 0) {
+                return fallbackEstimateSubtaskTime(subtaskTitle, totalTaskTime);
+            }
+
+            return Math.min(Math.max(estimatedTime, 1), Math.floor(totalTaskTime / 2)); // Clamp between 1 min and half of total task time
+        } catch (error) {
+            console.error('Gemini API error for subtask estimation:', error);
+            return fallbackEstimateSubtaskTime(subtaskTitle, totalTaskTime);
+        }
+    }
+
+    // Fallback estimation functions (used when API fails)
+    function fallbackEstimateTaskTime(taskTitle) {
+        const taskLower = taskTitle.toLowerCase();
+
+        // Quick tasks (5-15 minutes)
+        if (taskLower.includes('call') || taskLower.includes('email') || taskLower.includes('text') ||
+            taskLower.includes('check') || taskLower.includes('review') || taskLower.includes('read')) {
+            return Math.floor(Math.random() * 10) + 5;
+        }
+
+        // Short tasks (15-45 minutes)
+        if (taskLower.includes('write') || taskLower.includes('plan') || taskLower.includes('organize') ||
+            taskLower.includes('schedule') || taskLower.includes('research')) {
+            return Math.floor(Math.random() * 30) + 15;
+        }
+
+        // Medium tasks (30-90 minutes)
+        if (taskLower.includes('clean') || taskLower.includes('cook') || taskLower.includes('bake') ||
+            taskLower.includes('exercise') || taskLower.includes('study') || taskLower.includes('practice')) {
+            return Math.floor(Math.random() * 60) + 30;
+        }
+
+        // Long tasks (60-180 minutes)
+        if (taskLower.includes('project') || taskLower.includes('presentation') || taskLower.includes('meeting') ||
+            taskLower.includes('interview') || taskLower.includes('workshop') || taskLower.includes('develop')) {
+            return Math.floor(Math.random() * 120) + 60;
+        }
+
+        // Very long tasks (120-300 minutes)
+        if (taskLower.includes('complete') || taskLower.includes('finish') || taskLower.includes('build') ||
+            taskLower.includes('create') || taskLower.includes('design') || taskLower.includes('implement')) {
+            return Math.floor(Math.random() * 180) + 120;
+        }
+
+        // Default estimation based on word count and complexity
+        const wordCount = taskTitle.split(' ').length;
+        let baseTime = 30; // Default 30 minutes
+
+        if (wordCount > 10) baseTime += 30;
+        if (wordCount > 15) baseTime += 60;
+
+        return baseTime + Math.floor(Math.random() * 20);
+    }
+
+    function fallbackEstimateSubtaskTime(subtaskTitle, totalTaskTime) {
+        const subtaskLower = subtaskTitle.toLowerCase();
+
+        // Very quick subtasks (2-5 minutes)
+        if (subtaskLower.includes('gather') || subtaskLower.includes('collect') ||
+            subtaskLower.includes('preheat') || subtaskLower.includes('set up') ||
+            subtaskLower.includes('turn on') || subtaskLower.includes('open')) {
+            return Math.floor(Math.random() * 3) + 2;
+        }
+
+        // Quick subtasks (3-8 minutes)
+        if (subtaskLower.includes('measure') || subtaskLower.includes('prepare') ||
+            subtaskLower.includes('mix') || subtaskLower.includes('dust') ||
+            subtaskLower.includes('clear') || subtaskLower.includes('organize')) {
+            return Math.floor(Math.random() * 5) + 3;
+        }
+
+        // Medium subtasks (5-15 minutes)
+        if (subtaskLower.includes('clean') || subtaskLower.includes('wash') ||
+            subtaskLower.includes('chop') || subtaskLower.includes('cook') ||
+            subtaskLower.includes('study') || subtaskLower.includes('review') ||
+            subtaskLower.includes('practice') || subtaskLower.includes('follow')) {
+            return Math.floor(Math.random() * 10) + 5;
+        }
+
+        // Longer subtasks (10-25 minutes)
+        if (subtaskLower.includes('monitor') || subtaskLower.includes('wait') ||
+            subtaskLower.includes('bake') || subtaskLower.includes('focus') ||
+            subtaskLower.includes('complete') || subtaskLower.includes('test')) {
+            return Math.floor(Math.random() * 15) + 10;
+        }
+
+        // Default: distribute time proportionally based on total task time
+        const baseSubtaskTime = Math.max(3, Math.floor(totalTaskTime / 8));
+        const variation = Math.floor(Math.random() * Math.max(2, baseSubtaskTime / 2));
+        return Math.max(2, baseSubtaskTime + variation - Math.floor(baseSubtaskTime / 4));
+    }
+
+    // Gemini API task breakdown function
+    async function breakdownTask(taskTitle) {
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `Break down this task into 6-8 specific, actionable sub-tasks: "${taskTitle}"
+
+Please return your response as a JSON array of strings. Each subtask should be:
+- Specific and actionable
+- Easy to understand
+- A logical step in completing the main task
+
+Example format: ["Step 1 description", "Step 2 description", "Step 3 description"]
+
+Task breakdown:`
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const generatedText = data.candidates[0].content.parts[0].text;
+            console.log('Gemini generated text:', generatedText);
+
+            // Try to parse as JSON, fallback to text parsing if needed
+            try {
+                // Extract JSON array from the response
+                const jsonMatch = generatedText.match(/\[.*?\]/s);
+                if (jsonMatch) {
+                    const breakdown = JSON.parse(jsonMatch[0]);
+                    return Array.isArray(breakdown) ? breakdown : [generatedText];
+                }
+                throw new Error('No JSON array found');
+            } catch {
+                // If JSON parsing fails, split by lines and clean up
+                return generatedText.split('\n')
+                    .filter(line => line.trim())
+                    .map(line => line.replace(/^[-*•\d.]\s*/, '').trim())
+                    .filter(line => line.length > 0 && !line.includes('[') && !line.includes(']'))
+                    .slice(0, 8); // Limit to 8 steps
+            }
+        } catch (error) {
+            console.error('Gemini API error:', error);
+
+            // Enhanced fallback breakdown based on task type
+            const taskLower = taskTitle.toLowerCase();
+
+            if (taskLower.includes('bake') || taskLower.includes('cook')) {
+                return [
+                    'Gather all ingredients and tools',
+                    'Preheat oven to required temperature',
+                    'Prepare ingredients (measure, chop, mix)',
+                    'Follow recipe steps in order',
+                    'Monitor cooking/baking progress',
+                    'Test for doneness',
+                    'Cool and serve appropriately',
+                    'Clean up workspace and tools'
+                ];
+            } else if (taskLower.includes('clean') || taskLower.includes('organize')) {
+                return [
+                    'Gather cleaning supplies and tools',
+                    'Clear and declutter the area',
+                    'Dust surfaces from top to bottom',
+                    'Clean and disinfect surfaces',
+                    'Organize items in designated places',
+                    'Vacuum or sweep floors',
+                    'Final inspection and touch-ups',
+                    'Put away cleaning supplies'
+                ];
+            } else if (taskLower.includes('study') || taskLower.includes('learn')) {
+                return [
+                    'Set up a quiet study environment',
+                    'Gather study materials and resources',
+                    'Create a study schedule or plan',
+                    'Review previous knowledge',
+                    'Focus on new material',
+                    'Take notes and practice exercises',
+                    'Test your understanding',
+                    'Review and reinforce learning'
+                ];
+            } else {
+                return [
+                    'Define the task requirements clearly',
+                    'Break down into smaller components',
+                    'Prioritize the most important steps',
+                    'Gather necessary resources and tools',
+                    'Create a timeline or schedule',
+                    'Start with the first step',
+                    'Monitor progress and adjust as needed',
+                    'Complete and review the final result'
+                ];
+            }
+        }
+    }
+
+    // Task management functions
+    async function addTask() {
+        const taskInput = document.getElementById('taskInput');
+        const deadlineInput = document.getElementById('deadlineInput');
+        const title = taskInput.value.trim();
+        const deadline = deadlineInput.value;
+
+        if (!title) {
+            showToast('Error', 'Please enter a task title', 'destructive');
+            return;
+        }
+
+        // Show loading state
+        const addBtn = document.getElementById('addTaskBtn');
+        const originalText = addBtn.textContent;
+        addBtn.textContent = 'Estimating time...';
+        addBtn.disabled = true;
+
+        try {
+            // AI estimates the expected time using Gemini API
+            const expectedTime = await estimateTaskTime(title);
+
+            const newTask = {
+                id: generateId(),
+                title: title,
+                completed: false,
+                deadline: deadline || undefined,
+                expectedTime: expectedTime,
+                createdAt: new Date()
+            };
+
+            tasks.push(newTask);
+            taskInput.value = '';
+            deadlineInput.value = '';
+
+            saveTasksToStorage();
+            showToast('Task Added', `Task added with AI-estimated time: ${expectedTime} minutes`);
+            renderTasks();
+        } catch (error) {
+            showToast('Error', 'Failed to estimate task time. Please try again.', 'destructive');
+        } finally {
+            // Reset button state
+            addBtn.textContent = originalText;
+            addBtn.disabled = false;
+        }
+    }
+
+    function updateTaskWithBreakdown(taskId, breakdown, subtaskTimes) {
+        // Calculate total time as sum of all subtask times
+        const totalEstimatedTime = subtaskTimes.reduce((sum, time) => sum + time, 0);
+
+        tasks = tasks.map(task =>
+            task.id === taskId ? {
+                ...task,
+                breakdown,
+                subtaskTimes,
+                expectedTime: totalEstimatedTime, // Update main task time to sum of subtasks
+                completedSubtasks: new Array(breakdown.length).fill(false)
+            } : task
+        );
+        saveTasksToStorage();
+        renderTasks();
+    }
+
+    async function handleBreakdown(task) {
+        loadingTaskIds.add(task.id);
+        renderTasks();
+
+        try {
+            const breakdown = await breakdownTask(task.title);
+
+            // Generate time estimates for each subtask using Gemini API
+            const subtaskTimes = await Promise.all(
+                breakdown.map(subtask => estimateSubtaskTime(subtask, task.expectedTime || 60))
+            );
+
+            updateTaskWithBreakdown(task.id, breakdown, subtaskTimes);
+            const totalTime = subtaskTimes.reduce((sum, time) => sum + time, 0);
+            showToast('Task Broken Down', `AI breakdown complete! Total estimated time: ${totalTime} minutes`);
+        } catch (error) {
+            showToast('Error', 'Failed to break down task. Please try again.', 'destructive');
+        } finally {
+            loadingTaskIds.delete(task.id);
+            renderTasks();
+        }
+    }
+
+    // Render functions
+    function renderTasks() {
+        const taskList = document.getElementById('taskList');
+
+        // Filter out completed tasks
+        const visibleTasks = tasks.filter(task => !task.completed);
+
+        if (visibleTasks.length === 0) {
+            taskList.innerHTML = '<div class="text-center text-gray-400 py-8">No tasks to display</div>';
+            return;
+        }
+
+        taskList.innerHTML = visibleTasks.map(task => `
+            <div class="space-y-4">
+                <!-- Task Item -->
+                <div class="task-item bg-gray-800 p-6 rounded-lg space-y-4">
+                    <div class="flex items-center gap-4">
+                        <input
+                            type="checkbox"
+                            ${task.completed ? 'checked' : ''}
+                            onchange="toggleTaskWithAnimation('${task.id}')"
+                            class="custom-checkbox"
+                        >
+                        <span class="text-white text-xl flex-1 font-medium ${task.completed ? 'completed-task' : ''}">${task.title}</span>
+                        <div class="flex gap-2">
+                            ${task.expectedTime ? `
+                                <div class="bg-blue-600 px-3 py-1 rounded-full">
+                                    <span class="text-white text-sm font-medium">
+                                        ${task.expectedTime} min
+                                    </span>
+                                </div>
+                            ` : ''}
+                            ${task.deadline ? `
+                                <div class="bg-green-600 px-3 py-1 rounded-full">
+                                    <span class="text-white text-sm font-medium">
+                                        Due: ${formatDate(task.deadline)}
+                                    </span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Breakdown button -->
+                    <div class="flex items-center gap-4 ml-9 mt-4">
+                        ${!task.breakdown && !loadingTaskIds.has(task.id) ? `
+                            <button
+                                onclick="handleBreakdown(tasks.find(t => t.id === '${task.id}'))"
+                                class="btn-blue-outline"
+                            >
+                                Breakdown
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- AI Breakdown Display -->
+                ${task.breakdown && !areAllSubtasksCompleted(task) ? `
+                    <div class="bg-gray-800 p-4 rounded" data-task-id="${task.id}">
+                        ${task.completedSubtasks ? `
+                            <div class="mb-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-300 font-medium">Progress</span>
+                                    <span class="text-blue-400 font-bold">
+                                        ${task.completedSubtasks.filter(completed => completed).length}/${task.breakdown.length} completed
+                                    </span>
+                                </div>
+                                <div class="w-full bg-gray-600 rounded-full h-3">
+                                    <div class="progress-bar bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full"
+                                         style="width: ${(task.completedSubtasks.filter(completed => completed).length / task.breakdown.length) * 100}%">
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div class="scrollable-breakdown">
+                            <div class="space-y-3 pr-2">
+                                ${task.breakdown.map((step, index) => {
+                                    const isCompleted = task.completedSubtasks && task.completedSubtasks[index];
+                                    const subtaskTime = task.subtaskTimes && task.subtaskTimes[index];
+                                    return `
+                                        <div class="bg-gray-700 p-3 rounded-lg flex items-center gap-3 hover:bg-gray-600 transition-all duration-200">
+                                            <input
+                                                type="checkbox"
+                                                ${isCompleted ? 'checked' : ''}
+                                                onchange="toggleSubtaskWithAnimation('${task.id}', ${index})"
+                                                class="subtask-checkbox"
+                                            >
+                                            <span class="text-gray-200 text-sm flex-1 ${isCompleted ? 'completed-subtask' : ''}">${step}</span>
+                                            ${subtaskTime ? `
+                                                <div class="bg-blue-500 px-2 py-1 rounded text-xs text-white font-medium">
+                                                    ${subtaskTime}m
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${task.breakdown && areAllSubtasksCompleted(task) ? `
+                    <div class="bg-green-800 p-3 rounded-lg">
+                        <div class="text-green-200 text-center text-sm">
+                            ✅ All subtasks completed! Great job!
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Loading state for breakdown -->
+                ${loadingTaskIds.has(task.id) ? `
+                    <div class="text-gray-300 text-sm">
+                        Breaking down task...
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    // Event listeners
+    document.getElementById('addTaskBtn').addEventListener('click', addTask);
+    document.getElementById('taskInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+
+    // Initialize the app
+    function initializeApp() {
+        loadTasksFromStorage();
+        renderTasks();
+        console.log('App initialized with', tasks.length, 'tasks loaded from localStorage');
+    }
+
+    // Load tasks from localStorage and render
+    initializeApp();
+</script>
+</body>
+</html>
